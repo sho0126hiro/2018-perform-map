@@ -10,11 +10,7 @@ function init() {
   var bmp = new createjs.Bitmap("./../imgs/base.png");
   var rect = new createjs.Shape();
   //画像を画面いっぱいのサイズに
-  bmp.image.onload = function(){
-    var w = this.width;
-    SizeMaxBitmap(bmp,w);
-  };
-  
+  SizeMaxBitmap(bmp);
   bmp.y=0;
   rect.graphics.beginFill("DarkRed"); // 赤色で描画するように設定
   rect.graphics.drawRect(0, 0, 100, 200);
@@ -43,13 +39,17 @@ function init() {
     canvasElement.height = canvasContainer.offsetHeight;
     canvasElement.width  = canvasContainer.offsetWidth;
   }
-  function SizeMaxBitmap(bmp,bmp_width){
-    bmp.scaleX = canvasElement.width / bmp_width;
-    bmp.scaleY = bmp.scaleX;
-    // x,yの位置に画像の中央が表示されるように設定
-    //bmp.regX = bmp.getBounds().width / 2;
-    //bmp.regY = bmp.getBounds().height / 2;
+  function SizeMaxBitmap(bmp){
+    bmp.image.onload = function(){
+      bmp.scaleX = canvasElement.width / this.width;
+      bmp.scaleY = bmp.scaleX;
+      // x,yの位置に画像の中央が表示されるように設定
+      //bmp.regX = bmp.getBounds().width / 2;
+      //bmp.regY = bmp.getBounds().height / 2;
+    };
   }
+    
+    
   // Click
   function handleClick(event){
     alert("red Zone");
