@@ -1,0 +1,19 @@
+{
+	"account": {
+		"user": {
+			"ShopName": "shopname",
+			"Class": "class"
+		}
+	},
+	"shop": {
+		"shopname": {
+			"goods": {
+				"name": "price"
+			},
+			"image": [
+				"image"
+			],
+			"text": "text"
+		}
+	}
+}

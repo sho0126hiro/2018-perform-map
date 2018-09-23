@@ -72,6 +72,4 @@ function init(){
     DisplayContainer.cache(0,0,2000,2000);
     stage.addChild(DisplayContainer);
   }
-
-  
 }
