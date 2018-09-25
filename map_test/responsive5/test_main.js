@@ -51,8 +51,6 @@ function init() {
       //bmp.regY = bmp.getBounds().height / 2;
     };
   }
-    
-    
   // Click
   function handleClick(event){
     alert("red Zone");
