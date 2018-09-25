@@ -1,71 +1,57 @@
 {
     "toCampusArrow":"map-arrow.svg",
-    "generalview": "map.svg",
+    "generalview": "map-mogi-A.png",
     "AreaRects":[
-        {"x":400,"y":100,"width":100,"height":100},
-        {"x":200,"y":100,"width":100,"height":100},
-        {"x":100,"y":100,"width":100,"height":100},
-        {"x":100,"y":100,"width":100,"height":100}
+        {"x":50,"y":0,"width":100,"height":100}
     ],
+    "pinImg":"pin.svg",
     "OutsideAreas":[
         {
             "area":"A",
             "img":"map-mogi-A.svg",
-            "rect":[
-                {"x":100,"y":100,"width":100,"height":100},
-                {"x":200,"y":100,"width":100,"height":100},
-                {"x":300,"y":100,"width":100,"height":100},
-                {"x":400,"y":100,"width":100,"height":100}
+            "pins":[
+                {"x":100,"y":100},
+                {"x":100,"y":100}
             ]
         },
         {
             "area":"B",
             "img":"map-mogi-B.svg",
-            "rect":[
-                {"x":100,"y":100,"width":100,"height":100},
-                {"x":200,"y":100,"width":100,"height":100},
-                {"x":300,"y":100,"width":100,"height":100},
-                {"x":400,"y":100,"width":100,"height":100}
+            "pins":[
+                {"x":100,"y":100},
+                {"x":100,"y":100}
             ]
         },
         {
             "area":"C",
             "img":"map-mogi-C.svg",
-            "rect":[
-                {"x":100,"y":100,"width":100,"height":100},
-                {"x":200,"y":100,"width":100,"height":100},
-                {"x":300,"y":100,"width":100,"height":100},
-                {"x":400,"y":100,"width":100,"height":100}
+            "pins":[
+                {"x":100,"y":100},
+                {"x":100,"y":100}
             ]
         },
         {
             "area":"D",
             "img":"map-mogi-D.svg",
-            "rect":[
-                {"x":100,"y":100,"width":100,"height":100},
-                {"x":200,"y":100,"width":100,"height":100},
-                {"x":300,"y":100,"width":100,"height":100},
-                {"x":400,"y":100,"width":100,"height":100}
+            "pins":[
+                {"x":100,"y":100},
+                {"x":100,"y":100}
             ]
         },
         {
             "area":"E",
             "img":"map-mogi-E.svg",
-            "rect":[
-                {"x":100,"y":100,"width":100,"height":100},
-                {"x":200,"y":100,"width":100,"height":100},
-                {"x":300,"y":100,"width":100,"height":100},
-                {"x":400,"y":100,"width":100,"height":100}
+            "pins":[
+                {"x":100,"y":100},
+                {"x":100,"y":100}
             ]
         },
         {
             "area":"F",
             "img":"map-mogi-F.svg",
-            "rect":[
-                {"x":100,"y":100,"width":100,"height":100},
-                {"x":200,"y":100,"width":100,"height":100},
-                {"x":300,"y":100,"width":100,"height":100},
-                {"x":400,"y":100,"width":100,"height":100}
+            "pins":[
+                {"x":100,"y":100},
+                {"x":100,"y":100}
             ]
         }
     ],
