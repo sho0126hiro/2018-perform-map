@@ -84,13 +84,13 @@ function init(event){
     // 親子構造の構築
     //Containerの定義
     var OutsideContainer = new createjs.Container(); // 構外マップで表示されるオブジェクトが格納されている。
-    var areaContainers = [];                         // 各エリアのデータがA,B,C,D,E,F,の順で格納される。
-    var g_rects = [];
-    var am_sizes_tmp =[]; // await時間短縮用
-    var am_sizes = []; // エリアごとに分けたときの画像のサイズが入っている。
-    var am_imgs = []; // エリアごとに分けたときの画像が入っている。
-    var a_toGenerals= []; //エリアから全体に戻るときの画像が入っている。
-    var outSidePins_r = []; //校外のピンたち（outSidePins[Area][num]) 本当はその上に隠れている四角
+    var areaContainers   = []; // 各エリアのデータがA,B,C,D,E,F,の順で格納される。
+    var g_rects          = [];
+    var am_sizes_tmp     = []; // await時間短縮用
+    var am_sizes         = []; // エリアごとに分けたときの画像のサイズが入っている。
+    var am_imgs          = []; // エリアごとに分けたときの画像が入っている。
+    var a_toGenerals     = []; //エリアから全体に戻るときの画像が入っている。
+    var outSidePins_r    = []; //校外のピンたち（outSidePins[Area][num]) 本当はその上に隠れている四角
     
     var InsideTopContainer = new createjs.Container();// 構内マップで表示されるオブジェクトが格納されている。
     // :: 全体マップの配置 -------------------------------------------------------------------
@@ -195,6 +195,7 @@ function init(event){
     // :: 構内マップの配置 -------------------------------------------------------------------
     var cm_img = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.top);
     var cm_size = await getImageSize(cm_img);
+    var c_rects = [];
     // canvasのサイズに画像を合わせる。
     if((canvasElement.width/cm_size[0]) * cm_size[1] > canvasElement.height){
       // 縦横比が合わないと高さがcanvasを超える問題の対処
@@ -215,11 +216,24 @@ function init(event){
     toOutsideArrow.x        = 3000 * gm_general.scaleX; // *z 座標を入れよう
     toOutsideArrow.y        = 1400 * gm_general.scaleY; // *z
     InsideTopContainer.addChild(toOutsideArrow);
+    // :: 構内棟ごとのエリア
+    for(i=0;i<j_mapImgsData.Campus.buildingRects.length;i++){
+      var c_rect = new createjs.Shape();
+      var j_rect = j_mapImgsData.Campus.buildingRects[i];
+      c_rect.graphics.beginFill("DarkRed");
+      c_rect.graphics.drawRect(0,0,j_rect.width * gm_general.scaleX,j_rect.height * gm_general.scaleY);
+      c_rect.x = j_rect.x * gm_general.scaleX; // 位置座標セット
+      c_rect.y = j_rect.y * gm_general.scaleY; // 位置座標セット
+      c_rect.alpha = 0.5;                     // 透明度
+      InsideTopContainer.addChild(c_rect);
+      c_rects.push(c_rect);
+    }
     //event
     EventListener();
     //初期状態にする。
     //全体MAPを表示する。
-    DisplayContainer.addChild(OutsideContainer);
+    //DisplayContainer.addChild(OutsideContainer);
+    DisplayContainer.addChild(InsideTopContainer);
     // -- eventListener
     function EventListener(){
       // 構内への矢印に対する処理
@@ -240,6 +254,11 @@ function init(event){
           outSidePins_r[i][j].eventParam2 = j;
         }
       }
+      //構内の棟を示す四角に対する処理
+      for(i=0;i<c_rects.length;i++){
+        c_rects[i].addEventListener("click",CtoB); // Campus to Buildings 
+        c_rects[i].eventParam = i ;
+      }
     }
     // 全体画面から各エリアへ飛ぶ
     function GtoA(event){
@@ -255,6 +274,11 @@ function init(event){
     }
     function CtoptoG(event){
       MapChange(InsideTopContainer,OutsideContainer);
+    }
+    function CtoB(event){
+      var buildNum = [1,2,5];
+      i = event.target.eventParam;
+      console.log(buildNum[i]);
     }
     // 現在のページから次のページに切り替わる >>
     function MapChange(CurrentContainer,NextContainer){

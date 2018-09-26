@@ -86,11 +86,17 @@
     ],
     "Campus":{
         "top":"map-inside.png",
+        "buildingRects":[
+            {"x":1200,"y":1100,"width":1440,"height":280,"color":"DarkRed"},
+            {"x":1200,"y":560,"width":1440,"height":280,"color":"DarkRed"},
+            {"x":2220,"y":30,"width":420,"height":280,"color":"DarkRed"}
+        ],
         "Building":{
             "1":{
                 "Floor":{
                     "F1":"",
-                    "F2":""
+                    "F2":"",
+                    "F3":""
                 }
             }
         }
