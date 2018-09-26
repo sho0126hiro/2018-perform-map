@@ -7,6 +7,7 @@ a_-- : 外・エリアごとに配置するオブジェクト
 m_-- : MAP画像
 // *z : 後から座標指定しなきゃダメなところ
 // ** comment  後から実装するべきところ
+Comment
 */
 
 window.addEventListener("load",Load);
