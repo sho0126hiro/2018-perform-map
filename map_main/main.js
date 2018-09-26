@@ -4,7 +4,9 @@ comment:
 g_-- : 全体マップにおくオブジェクト
 j_-- : JSONから持ってきたデータ
 a_-- : 外・エリアごとに配置するオブジェクト
+c_-- : 構内マップにおくオブジェクト
 m_-- : MAP画像
+h_-- : html(DOM)
 // *z : 後から座標指定しなきゃダメなところ
 // ** comment  後から実装するべきところ
 // *p : pathが配置されていること
@@ -36,6 +38,7 @@ function init(event){
   // - canvasの定義
   var canvasContainer = document.getElementById("wrap");
   var canvasElement = document.getElementById("myCanvas");
+  var h_shopname  = document.getElementById("shopname");
   // CanvasSizeの大きさ画面サイズに設定する（初期化）
   var Sizing = function(){
     canvasElement.height = canvasContainer.offsetHeight;
@@ -63,11 +66,12 @@ function init(event){
       }
     });
   }
+  // --- canvasのサイズを変更する　使わないかも
   function ChangeCanvasSize(width,height){
     canvasElement.style.width = width;
     canvasElement.style.height = height;
   }
-  // -- main
+  // -- main asyncなのでawaitで非同期処理を同期的に書ける
   async function main(){
     //画像のロードを完全に済ませる
     var bmp_size = await getImageSize(gm_general);
@@ -79,18 +83,21 @@ function init(event){
                     gm_general.image.height * gm_general.scaleY);
     // 親子構造の構築
     //Containerの定義
-    var OutsideContainer = new createjs.Container(); // 構外マップで表示される四角形たちが格納されている。
+    var OutsideContainer = new createjs.Container(); // 構外マップで表示されるオブジェクトが格納されている。
     var areaContainers = [];                         // 各エリアのデータがA,B,C,D,E,F,の順で格納される。
     var g_rects = [];
     var am_sizes_tmp =[]; // await時間短縮用
     var am_sizes = []; // エリアごとに分けたときの画像のサイズが入っている。
     var am_imgs = []; // エリアごとに分けたときの画像が入っている。
     var a_toGenerals= []; //エリアから全体に戻るときの画像が入っている。
-    // :: 全体マップに対する処理
+    var outSidePins_r = []; //校外のピンたち（outSidePins[Area][num]) 本当はその上に隠れている四角
+    
+    var InsideTopContainer = new createjs.Container();// 構内マップで表示されるオブジェクトが格納されている。
+    // :: 全体マップの配置 -------------------------------------------------------------------
     OutsideContainer.addChild(gm_general); // MAP画像を構外格納用コンテナの格納
     var g_areaTexts = ["A","B","C","D","E","F"];
+    // エリア分け用の四角の配置
     for(i=0;i<j_mapImgsData.AreaRects.length;i++){
-      // エリア分け用の四角
       var g_rect = new createjs.Shape();
       var j_rect = j_mapImgsData.AreaRects[i];
       g_rect.graphics.beginFill(j_rect.color); // ** 色分けしたいなら後で配列を宣言しましょう
@@ -119,29 +126,27 @@ function init(event){
       g_rects.push(g_rect);
     }
     // :: 構内へ、の矢印
-    // *p
-    var toCampusArrow = new createjs.Bitmap("./imgs/" + j_mapImgsData.ToCampusArrow);
+    var toCampusArrow = new createjs.Bitmap("./imgs/" + j_mapImgsData.ToCampusArrow);　// *p
     // 位置、角度のセット
-    toCampusArrow.x        = 100 * gm_general.scaleX; // *z 座標を入れよう
-    toCampusArrow.y        = 100 * gm_general.scaleY; // *z
-    //OutsideContainer.addChild(toCampusArrow);
-    // :: 小エリアに対する処理
+    toCampusArrow.scaleX = gm_general.scaleX * 0.8;
+    toCampusArrow.scaleY = gm_general.scaleY * 0.8;
+    toCampusArrow.x        = 3000 * gm_general.scaleX; // *z 座標を入れよう
+    toCampusArrow.y        = 300 * gm_general.scaleY; // *z
+    OutsideContainer.addChild(toCampusArrow);
+    // :: 小エリアの配置 -------------------------------------------------------------------
+    // 各エリアの拡大画像の大きさの取得
     for(i=0;i<j_mapImgsData.OutsideAreas.length;i++){
-      // 各エリアの拡大画像の配置 // *p
       var am_img = new createjs.Bitmap("./imgs/" + j_mapImgsData.OutsideAreas[i].img);
       am_sizes_tmp[i] = getImageSize(am_img);
     }
-    console.log("hello");
     for(i=0;i<j_mapImgsData.OutsideAreas.length;i++)am_sizes[i] = await am_sizes_tmp[i];
-    console.log("finish");
-    //am_sizes Get後
+    //小エリア内オブジェクトの配置
     for(i=0;i<j_mapImgsData.OutsideAreas.length;i++){
       // a_ : エリア分けされたもの
       var a_PageContainer =  new createjs.Container(); // i番目のエリアのデータが全部入る
       var a_PinContainer = new createjs.Container(); // ピンがいっぱい入る
       // 各エリアの拡大画像の配置 // *p
       var am_img = new createjs.Bitmap("./imgs/" + j_mapImgsData.OutsideAreas[i].img);
-      //var am_size = [am_img.image.width,am_img.image.height];
       var am_size = am_sizes[i];
       am_imgs.push(am_img);
       // canvasのサイズに画像を合わせる。
@@ -155,39 +160,86 @@ function init(event){
         am_img.scaleX = canvasElement.width / am_size[0];
         am_img.scaleY = am_img.scaleX;
       }
-      // ** 左にずれた時はここで調整する *z
       a_PageContainer.addChild(am_img);
-      // ** ピン画像の配置 pinImgを編集してくれ
-      /*
-      for(j=0;j<j_mapImgsData.pins.length;j++){
-        var a_pin = new createjs.Bitmap("./imgs/"+j_mapImgsData.PinImg);
+      var a_pins =[]; // AreaPins
+      var a_pin1Tmp = new createjs.Bitmap("./imgs/"+j_mapImgsData.PinImg_1);
+      var pin1Size = await getImageSize(a_pin1Tmp); // pinの画像サイズを取得
+      for(j=0;j<j_mapImgsData.OutsideAreas[i].pins.length;j++){
+        var a_pin = new createjs.Bitmap("./imgs/"+j_mapImgsData.PinImg_1);
         a_pin.scaleX = gm_general.scaleX;
         a_pin.scaleY = gm_general.scaleY;
         a_pin.x = j_mapImgsData.OutsideAreas[i].pins[j].x * gm_general.scaleX;
         a_pin.y = j_mapImgsData.OutsideAreas[i].pins[j].y * gm_general.scaleY;
         a_PinContainer.addChild(a_pin);
+        var a_pin_rect = new createjs.Shape();
+        a_pin_rect.graphics.beginFill("white");
+        a_pin_rect.graphics.drawRect(0,0,pin1Size[0] * a_pin.scaleX,pin1Size[1] * a_pin.scaleY);      
+        a_pin_rect.x = a_pin.x;
+        a_pin_rect.y = a_pin.y;
+        a_pin_rect.alpha = 0.0059;
+        a_PinContainer.addChild(a_pin_rect);
+        a_pins.push(a_pin_rect);//pinの上に係る四角形たちを入れる（クリック判定は透明の四角形）
       }
+      outSidePins_r.push(a_pins);
       a_PageContainer.addChild(a_PinContainer);
-      */
       // Generalへ戻る画像の配置
       var a_toGeneral = new createjs.Bitmap("./imgs/" + j_mapImgsData.GotoGeneralImg);
       a_toGeneral.scaleX = gm_general.scaleX;
       a_toGeneral.scaleY = gm_general.scaleY;
-      a_toGeneral.x = j_mapImgsData.OutsideAreas[i].goGeneral.x;
-      a_toGeneral.y = j_mapImgsData.OutsideAreas[i].goGeneral.y;
+      a_toGeneral.x = j_mapImgsData.OutsideAreas[i].goGeneral.x * gm_general.scaleX;
+      a_toGeneral.y = j_mapImgsData.OutsideAreas[i].goGeneral.y * gm_general.scaleY;
       a_PageContainer.addChild(a_toGeneral);
       a_toGenerals.push(a_toGeneral);
       areaContainers.push(a_PageContainer);
     }
+    // :: 構内マップの配置 -------------------------------------------------------------------
+    var cm_img = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.top);
+    var cm_size = await getImageSize(cm_img);
+    // canvasのサイズに画像を合わせる。
+    if((canvasElement.width/cm_size[0]) * cm_size[1] > canvasElement.height){
+      // 縦横比が合わないと高さがcanvasを超える問題の対処
+      cm_img.scaleX = canvasElement.height / cm_size[1];
+      cm_img.scaleY = cm_img.scaleX;
+      cm_img.x = ( (canvasElement.width - cm_img.scaleY * cm_size[0])/2 );
+    }else{
+      // scale : 現在のcanvasSize / am_img.width 
+      cm_img.scaleX = canvasElement.width / cm_size[0];
+      cm_img.scaleY = cm_img.scaleX;
+    }
+    InsideTopContainer.addChild(cm_img);
+    // :: 構外へ、の矢印
+    var toOutsideArrow = new createjs.Bitmap("./imgs/" + j_mapImgsData.ToOutsideArrow);　// *p
+    // 位置、角度のセット
+    toOutsideArrow.scaleX = gm_general.scaleX;
+    toOutsideArrow.scaleY = gm_general.scaleY;
+    toOutsideArrow.x        = 3000 * gm_general.scaleX; // *z 座標を入れよう
+    toOutsideArrow.y        = 1400 * gm_general.scaleY; // *z
+    InsideTopContainer.addChild(toOutsideArrow);
+    //event
+    EventListener();
     //初期状態にする。
     //全体MAPを表示する。
     DisplayContainer.addChild(OutsideContainer);
-    //event
-    for(i=0;i<g_rects.length;i++){
-      g_rects[i].addEventListener("click",GtoA); 
-      g_rects[i].eventParam = i ;
-      a_toGenerals[i].addEventListener("click",AtoG);
-      a_toGenerals[i].eventParam = i;
+    // -- eventListener
+    function EventListener(){
+      // 構内への矢印に対する処理
+      toCampusArrow.addEventListener("click",GtoCtop);
+      // 構外への矢印に対する処理
+      toOutsideArrow.addEventListener("click",CtoptoG);
+      //エリアを示す四角に対する処理
+      for(i=0;i<g_rects.length;i++){
+        g_rects[i].addEventListener("click",GtoA); 
+        g_rects[i].eventParam = i ;
+        //エリア内にとんだときに全体エリアに飛ぶ処理
+        a_toGenerals[i].addEventListener("click",AtoG);
+        a_toGenerals[i].eventParam = i;
+        // MAPピンに対する処理
+        for(j=0;j<j_mapImgsData.OutsideAreas[i].pins.length;j++){
+          outSidePins_r[i][j].addEventListener("click",WriteInfo);
+          outSidePins_r[i][j].eventParam = i;
+          outSidePins_r[i][j].eventParam2 = j;
+        }
+      }
     }
     // 全体画面から各エリアへ飛ぶ
     function GtoA(event){
@@ -198,10 +250,22 @@ function init(event){
       var i = event.target.eventParam;
       MapChange(areaContainers[i],OutsideContainer);
     }
+    function GtoCtop(event){
+      MapChange(OutsideContainer,InsideTopContainer);
+    }
+    function CtoptoG(event){
+      MapChange(InsideTopContainer,OutsideContainer);
+    }
     // 現在のページから次のページに切り替わる >>
     function MapChange(CurrentContainer,NextContainer){
       DisplayContainer.removeChild(CurrentContainer);
       DisplayContainer.addChild(NextContainer);
+    }
+    // 情報を書き込む（DOM出力）
+    function WriteInfo(event){
+      var i = event.target.eventParam;
+      var j = event.target.eventParam2;
+      h_shopname.textContent = "エリア"+g_areaTexts[i]+"の"+j+"番目";
     }
   }// ここまでmain
   //Resize
@@ -209,6 +273,7 @@ function init(event){
     (!window.requestAnimationFrame) ? this.setTimeout(Sizing) : window,requestAnimationFrame(Sizing);
   })
   // 画面更新
+  createjs.Ticker.timingMode = createjs.Ticker.RAF;
   createjs.Ticker.on("tick",function(){
     stage.update();
     DisplayContainer.updateCache();

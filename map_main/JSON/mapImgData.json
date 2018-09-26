@@ -1,5 +1,6 @@
 {
-    "ToCampusArrow":"map-arrow.svg",
+    "ToCampusArrow":"goGeneral.png",
+    "ToOutsideArrow":"goGeneral.png",
     "Generalview": "map.png",
     "AreaRects":[
         {"x":1050,"y":300,"width":500,"height":250,"color":"DarkRed"},
@@ -9,66 +10,82 @@
         {"x":2450,"y":1150,"width":350,"height":230,"color":"Green"},
         {"x":2250,"y":850,"width":230,"height":200,"color":"Blue"}
     ],
-    "PinImg":"pin.svg",
+    "PinImg_1":"pin_1.png",
     "GotoGeneralImg":"GoGeneral.png",
     "OutsideAreas":[
         {
             "area":"A",
             "img":"map-mogi-A.png",
             "pins":[
-                {"x":100,"y":100},
-                {"x":100,"y":100}
+                {"x":766,"y":400},
+                {"x":1070,"y":400},
+                {"x":1900,"y":400},
+                {"x":2200,"y":400},
+                {"x":3130,"y":750}
             ],
-            "goGeneral":{"x":800,"y":70}
+            "goGeneral":{"x":3000,"y":210}
         },
         {
             "area":"B",
             "img":"map-mogi-B.png",
             "pins":[
-                {"x":100,"y":100},
-                {"x":100,"y":100}
+                {"x":1020,"y":80},
+                {"x":1420,"y":80},
+                {"x":1820,"y":80},
+                {"x":2220,"y":80}
             ],
-            "goGeneral":{"x":100,"y":100}
+            "goGeneral":{"x":3000,"y":1450}
         },
         {
             "area":"C",
             "img":"map-mogi-C.png",
             "pins":[
-                {"x":100,"y":100},
-                {"x":100,"y":100}
+                {"x":2100,"y":1300},
+                {"x":2100,"y":1600}
             ],
-            "goGeneral":{"x":100,"y":100}
+            "goGeneral":{"x":3000,"y":1450}
         },
         {
             "area":"D",
             "img":"map-mogi-D.png",
             "pins":[
-                {"x":100,"y":100},
-                {"x":100,"y":100}
+                {"x":2100,"y":350},
+                {"x":2100,"y":630},
+                {"x":2100,"y":1150},
+                {"x":2100,"y":1450},
+                {"x":2985,"y":400},
+                {"x":2985,"y":680},
+                {"x":2985,"y":950},
+                {"x":2985,"y":1250}
             ],
-            "goGeneral":{"x":100,"y":100}
+            "goGeneral":{"x":900,"y":1380}
         },
         {
             "area":"E",
             "img":"map-mogi-E.png",
             "pins":[
-                {"x":100,"y":100},
-                {"x":100,"y":100}
+                {"x":1120,"y":450},
+                {"x":1450,"y":450},
+                {"x":2120,"y":450},
+                {"x":2450,"y":450},
+                {"x":2780,"y":450},
+                {"x":3110,"y":450}
             ],
-            "goGeneral":{"x":100,"y":100}
+            "goGeneral":{"x":2800,"y":1450}
         },
         {
             "area":"F",
             "img":"map-mogi-F.png",
             "pins":[
-                {"x":100,"y":100},
-                {"x":100,"y":100}
+                {"x":1160,"y":1100},
+                {"x":2080,"y":1100},
+                {"x":1640,"y":1100}  
             ],
-            "goGeneral":{"x":100,"y":100}
+            "goGeneral":{"x":2800,"y":1450}
         }
     ],
     "Campus":{
-        "generalview":"",
+        "top":"map-inside.png",
         "Building":{
             "1":{
                 "Floor":{
