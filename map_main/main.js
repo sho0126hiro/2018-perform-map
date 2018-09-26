@@ -58,7 +58,6 @@ function init(event){
       }
     });
   }
-
   // -- main
   async function main(){
     //画像のロードを完全に済ませる
@@ -69,24 +68,41 @@ function init(event){
     //canvasSizeの調整
     canvasContainer.style.height = gm_general.image.height * gm_general.scaleY;
     canvasElement.style.height = gm_general.image.height * gm_general.scaleY;
-    stage.addChild(gm_general);
     // 親子構造の構築
     //Containerの定義
     var OutsideContainer = new createjs.Container(); // 構外マップで表示される四角形たちが格納されている。
     var areaContainers = [];                         // 各エリアのデータがA,B,C,D,E,F,の順で格納される。
     var g_rects = [];
     // :: 全体マップに対する処理
+    OutsideContainer.addChild(gm_general); // MAP画像を構外格納用コンテナの格納
+    var g_areaTexts = ["A","B","C","D","E","F"];
     for(i=0;i<j_mapImgsData.AreaRects.length;i++){
-      // 四角形
+      // エリア分け用の四角
       var g_rect = new createjs.Shape();
       var j_rect = j_mapImgsData.AreaRects[i];
-      g_rect.graphics.beginFill("DarkRed"); // ** 色分けしたいなら後で配列を宣言しましょう
-      g_rect.graphics.drawRect(0,0,j_rect.width * gm_general.scaleX,j_rect.height * gm_general.scaleY);
+      g_rect.graphics.beginFill(j_rect.color); // ** 色分けしたいなら後で配列を宣言しましょう
+      g_rect.graphics.drawRoundRect(0,0,j_rect.width * gm_general.scaleX,j_rect.height * gm_general.scaleY, 20* gm_general.scaleX);
       g_rect.x = j_rect.x * gm_general.scaleX; // 位置座標セット
       g_rect.y = j_rect.y * gm_general.scaleY; // 位置座標セット
-      g_rect.alpha = 0.5;                       // 透明度
-      // 四角形を構外MAP用に入れる。
+      g_rect.alpha = 0.15;                       // 透明度
+      // 枠線用オブジェクト
+      var g_rectStroke = new createjs.Shape();
+      g_rectStroke.graphics.beginStroke(j_rect.color);
+      g_rectStroke.graphics.setStrokeStyle(5 * gm_general.scaleX); // * gm_general.scaleX
+      g_rectStroke.graphics.drawRoundRect(0,0,j_rect.width * gm_general.scaleX,j_rect.height * gm_general.scaleY,20 * gm_general.scaleX);      
+      g_rectStroke.x = g_rect.x;
+      g_rectStroke.y = g_rect.y;
+      // エリア分けで用いるテキスト
+      var textSize = 100 * gm_general.scaleX;
+      var g_text= new createjs.Text(g_areaTexts[i], textSize +"px selif",j_rect.color);
+      g_text.x = (j_rect.x + parseInt(j_rect.width /2) ) * gm_general.scaleX;
+      g_text.y = (j_rect.y + parseInt(j_rect.height/2) ) * gm_general.scaleY;
+      g_text.textAlign = "center";
+      g_text.textBaseline = "middle";
+      // 四角形とテキストを構外MAP用に入れる。
       OutsideContainer.addChild(g_rect);
+      OutsideContainer.addChild(g_rectStroke);
+      OutsideContainer.addChild(g_text);
       g_rects.push(g_rect);
     }
     // :: 構内へ、の矢印
