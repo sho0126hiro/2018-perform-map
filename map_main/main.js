@@ -5,6 +5,7 @@ g_-- : 全体マップにおくオブジェクト
 j_-- : JSONから持ってきたデータ
 a_-- : 外・エリアごとに配置するオブジェクト
 c_-- : 構内マップにおくオブジェクト
+f_-- : 構内のフロア内オブジェクト
 m_-- : MAP画像
 h_-- : html(DOM)
 e_-- : eventチェック用
@@ -159,6 +160,7 @@ function init(event){
         // scale : 現在のcanvasSize / am_img.width 
         am_img.scaleX = canvasElement.width / am_size[0];
         am_img.scaleY = am_img.scaleX;
+        am_img.y = ( (canvasElement.height - am_img.scaleX * am_size[1])/2 );
       }
       a_PageContainer.addChild(am_img);
       var a_pins =[]; // AreaPins
@@ -206,6 +208,7 @@ function init(event){
       // scale : 現在のcanvasSize / am_img.width 
       cm_img.scaleX = canvasElement.width / cm_size[0];
       cm_img.scaleY = cm_img.scaleX;
+      cm_img.y = ( (canvasElement.height - cm_img.scaleX * cm_size[1])/2 );
     }
     InsideTopContainer.addChild(cm_img);
     // :: 構外へ、の矢印
@@ -232,7 +235,7 @@ function init(event){
     // :: 構内マップに表示される吹き出し
     var balloonContainers = []; // 吹き出しと同時に表示されるオブジェクトが格納される
     var c_balloons = []; // 吹き出したち
-    var c_balloonRects = []; // 吹き出しに載せられる
+    var c_balloonsRects = []; // 吹き出しの上の全てのオブジェクト [吹き出し番号][吹き出し内番号]
     //吹き出しとその上に配置されるオブジェクトの配置
     for(i=0;i<j_mapImgsData.Campus.balloons.length;i++){
       //吹き出しの配置
@@ -240,6 +243,7 @@ function init(event){
       var j_balloon = j_mapImgsData.Campus.balloons[i];
       var j_balloonRect = j_mapImgsData.Campus.balloonRects[i];
       var c_balloon = new createjs.Bitmap("./imgs/" + j_balloon.img);
+      var c_balloonRects = []; // i番目吹き出しに載せられる四角たちが格納されている。
       c_balloon.scaleX = gm_general.scaleX * 0.26; // *z スケール調整
       c_balloon.scaleY = gm_general.scaleY *0.26; // *z
       c_balloon.x = j_balloon.x * gm_general.scaleX;
@@ -249,16 +253,78 @@ function init(event){
       // 吹き出しの上の四角形たちの配置
       for(j=0;j<j_balloonRect.length;j++){
         var c_balloonRect = new createjs.Shape();
-        c_balloonRect.graphics.beginFill("DarkRed");
+        c_balloonRect.graphics.beginFill("DarkRed"); // ** あとで色を消す
         c_balloonRect.graphics.drawRect(0,0,j_balloonRect[j].width * gm_general.scaleX,j_balloonRect[j].height * gm_general.scaleY);
         c_balloonRect.x = j_balloonRect[j].x * gm_general.scaleX; // 位置座標セット
         c_balloonRect.y = j_balloonRect[j].y * gm_general.scaleY; // 位置座標セット
-        c_balloonRect.alpha = 1;                      // 透明度
+        c_balloonRect.alpha = 0.5;                      // 透明度
         BalloonContainer.addChild(c_balloonRect);
         c_balloonRects.push(c_balloonRect);
       }
+      c_balloonsRects.push(c_balloonRects);
       balloonContainers.push(BalloonContainer);
     }
+    // 棟と階のMAPの配置
+    var BuildingFloorContainers = [];
+    var bfm_sizes_tmp = []; // await時間短縮用
+    var bfm_sizes = []; // await時間短縮用
+    var bf_toCampusTops = []; // 構内マップTOPへ飛ぶ矢印
+    //各フロア拡大画像のサイズの取得
+    for(i=0;i<j_mapImgsData.Campus.buildings.length;i++){
+      bfm_sizes_tmp[i] = []; // 2次元配列化
+      for(j=0;j<j_mapImgsData.Campus.buildings[i].floorImg.length;j++){
+        var fm_img = new createjs.Bitmap("./imgs/"+ j_mapImgsData.Campus.buildings[i].floorImg[j]);
+        bfm_sizes_tmp[i][j] = getImageSize(fm_img);
+      }
+    }
+    for(i=0;i<j_mapImgsData.Campus.buildings.length;i++){
+      bfm_sizes[i]=[];
+      for(j=0;j<j_mapImgsData.Campus.buildings[i].floorImg.length;j++){
+        bfm_sizes[i][j] = await bfm_sizes_tmp[i][j];
+      }
+    }
+    //各フロアオブジェクトの配置
+    for(i=0;i<j_mapImgsData.Campus.buildings.length;i++){
+      var FloorContainers = []; 
+      bf_toCampusTops[i] = []; //i棟の中にある全体への画像が格納される（後に.push）     
+      for(j=0;j<j_mapImgsData.Campus.buildings[i].floorImg.length;j++){
+        var FloorContainer = new createjs.Container();
+        var f_PinContainer = new createjs.Container(); // ピンがいっぱい入る
+        // 各フロアの拡大画像の配置 // *p
+        var fm_img = new createjs.Bitmap("./imgs/"+ j_mapImgsData.Campus.buildings[i].floorImg[j]);
+        var fm_size = bfm_sizes[i][j];
+        // canvasのサイズに画像を合わせる。
+        if((canvasElement.width/fm_size[0]) * fm_size[1] > canvasElement.height){
+          // 縦横比が合わないと高さがcanvasを超える問題の対処
+          fm_img.scaleX = canvasElement.height / fm_size[1];
+          fm_img.scaleY = fm_img.scaleX;
+          fm_img.x = ( (canvasElement.width - fm_img.scaleY * fm_size[0])/2 );
+        }else{
+          // scale : 現在のcanvasSize / am_img.width 
+          fm_img.scaleX = canvasElement.width / fm_size[0];
+          fm_img.scaleY = fm_img.scaleX;
+          fm_img.y = ( (canvasElement.height - fm_img.scaleX * fm_size[1])/2 );
+        }
+        FloorContainer.addChild(fm_img);
+        // ピンの処理
+        // ** 後で
+        // 構内TOPへの画像の配置 // *p
+        var f_toCampusTop = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.goTopArrow);
+        f_toCampusTop.scaleX = gm_general.scaleX;
+        f_toCampusTop.scaleY = gm_general.scaleY;
+        f_toCampusTop.x = j_mapImgsData.Campus.buildings[i].goTop[j].x * gm_general.scaleX;
+        f_toCampusTop.y = j_mapImgsData.Campus.buildings[i].goTop[j].y * gm_general.scaleY;
+        FloorContainer.addChild(f_toCampusTop);
+        bf_toCampusTops[i].push(f_toCampusTop);
+        FloorContainers.push(FloorContainer);
+      }
+      bf_toCampusTops.push(bf_toCampusTops[i]);
+      BuildingFloorContainers.push(FloorContainers);
+      //console.log(bf_toCampusTops);
+    }
+    console.log(bf_toCampusTops);
+    console.log(BuildingFloorContainers);
+
     //event
     var e_balloons = []; //吹き出しが出ていれば 1 出ていなければ0
     var e_buildNum = [2,3,5,8]; // 棟の番号
@@ -272,15 +338,15 @@ function init(event){
     // -- eventListener
     function EventListener(){
       // 構内への矢印に対する処理
-      toCampusArrow.addEventListener("click",GtoCtop);
+      toCampusArrow.addEventListener("click",GeneraltoCampusTop);
       // 構外への矢印に対する処理
-      toOutsideArrow.addEventListener("click",CtoptoG);
+      toOutsideArrow.addEventListener("click",CampusToptoGeneral);
       //エリアを示す四角に対する処理
       for(i=0;i<g_rects.length;i++){
-        g_rects[i].addEventListener("click",GtoA); 
+        g_rects[i].addEventListener("click",GeneraltoArea); 
         g_rects[i].eventParam = i ;
         //エリア内にとんだときに全体エリアに飛ぶ処理
-        a_toGenerals[i].addEventListener("click",AtoG);
+        a_toGenerals[i].addEventListener("click",AreatoGeneral);
         a_toGenerals[i].eventParam = i;
         // MAPピンに対する処理
         for(j=0;j<j_mapImgsData.OutsideAreas[i].pins.length;j++){
@@ -291,27 +357,43 @@ function init(event){
       }
       //構内の棟を示す四角に対する処理 >> 吹き出しの出現
       for(i=0;i<c_rects.length;i++){
+        //c_rects : 吹き出しを出すための四角
         c_rects[i].addEventListener("click",SetBalloon); // CampusTop to Buildings 
         c_rects[i].eventParam = i ;
       }
-      //構内の吹き出しに対する処理
-    }
+      //構内の吹き出しの中身に対する処理
+      for(i=0;i<c_balloons.length;i++){
+        for(j=0;j<c_balloonsRects[i].length;j++){
+          c_balloonsRects[i][j].addEventListener("click",BalloontoCampus);
+          c_balloonsRects[i][j].eventParam = i;
+          c_balloonsRects[i][j].eventParam2 = j;
+        }
+      }
+      // 構内TOPへに対する処理
+      for(i=0;i<bf_toCampusTops.length;i++){
+        for(j=0;j<bf_toCampusTops[i].length;j++){
+          bf_toCampusTops[i][j].addEventListener("click",FloortoCampusTop);
+          bf_toCampusTops[i][j].eventParam = i;
+          bf_toCampusTops[i][j].eventParam2 = j;
+        }
+      }
+    }//ここまでEventListener
     // 全体画面から各エリアへ飛ぶ
-    function GtoA(event){
+    function GeneraltoArea(event){
       var i = event.target.eventParam;
       MapChange(OutsideContainer,areaContainers[i]);
     }
     // 構外の各エリアから全体へ
-    function AtoG(event){
+    function AreatoGeneral(event){
       var i = event.target.eventParam;
       MapChange(areaContainers[i],OutsideContainer);
     }
     // 全体から構内topへ
-    function GtoCtop(event){
+    function GeneraltoCampusTop(event){
       MapChange(OutsideContainer,InsideTopContainer);
     }
     // 構内Topから全体へ
-    function CtoptoG(event){
+    function CampusToptoGeneral(event){
       MapChange(InsideTopContainer,OutsideContainer);
     }
     // 構内Topから吹き出しを出力
@@ -347,10 +429,31 @@ function init(event){
       InsideTopContainer.addChild(balloonContainers[e_balloonTarget]);
       e_balloons[e_balloonTarget] = 1;
     }
-    // 構内Topから各棟へ
-    function CtoptoB(event){
-      i = event.target.eventParam;
-      console.log(e_buildNum[i]);
+    // 吹き出しから各棟の階へ
+    function BalloontoCampus(event){
+      var i = event.target.eventParam;
+      var j = event.target.eventParam2;
+      // e_ballons[i] 棟の吹き出しのj階をクリックした
+      console.log(String(e_balloonBuildNum[i])+"棟の"+String(j)+"階をクリックしました");
+      // i,jをBuildingFloorContainerないの適切な値に変更する
+      //e_balloonBuildNum = [2,3,8] >> BuildingFloorContainers[i] = [0,1,3]  (2は5棟)
+      var buildingIndex = [0,1,3]; //吹き出しから飛べる棟番号(e_balloonBuildNumに対応)
+      // 今開いている吹き出しを検索して閉じる
+      for(k=0;k<c_balloons.length;k++){
+        if(e_balloons[k] == 1){
+          InsideTopContainer.removeChild(balloonContainers[k]);
+          e_balloons[k] =0;
+        }
+      }
+      MapChange(InsideTopContainer,BuildingFloorContainers[buildingIndex[i]][j]);
+    }
+
+    // フロアから構内のトップへ
+    function FloortoCampusTop(event){
+      var i = event.target.eventParam;
+      var j = event.target.eventParam2;
+      var buildingIndex = [0,1,3]; //吹き出しから飛べる棟番号(e_balloonBuildNumに対応)
+      MapChange(BuildingFloorContainers[buildingIndex[i]][j],InsideTopContainer);
     }
     // 現在のページから次のページに切り替わる >>
     function MapChange(CurrentContainer,NextContainer){
