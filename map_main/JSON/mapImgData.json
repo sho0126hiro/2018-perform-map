@@ -1,6 +1,6 @@
 {
     "ToCampusArrow":"goGeneral.png",
-    "ToOutsideArrow":"goGeneral.png",
+    "ToOutsideArrow":"map-arrow-toout.png",
     "Generalview": "map.png",
     "AreaRects":[
         {"x":1050,"y":300,"width":500,"height":250,"color":"DarkRed"},
@@ -97,14 +97,54 @@
             {"img":"map-inside-balloon3.png","x":2500,"y":160},
             {"img":"map-inside-balloon8.png","x":1100,"y":1350}
         ],
-        "Building":{
-            "1":{
-                "Floor":{
-                    "F1":"",
-                    "F2":"",
-                    "F3":""
-                }
+        "balloonRects":[
+            [
+                {"x":1200,"y":1100,"width":1440,"height":280}
+            ],
+            [
+                {"x":1200,"y":1100,"width":1440,"height":280},
+                {"x":1200,"y":1100,"width":1440,"height":280},
+                {"x":1200,"y":1100,"width":1440,"height":280},
+                {"x":1200,"y":1100,"width":1440,"height":280}
+            ],
+            [
+                {"x":1200,"y":1100,"width":1440,"height":280},
+                {"x":1200,"y":1100,"width":1440,"height":280}
+            ]
+        ],
+        "building":[
+            {
+                "buildNum":2,
+                "floorImg":[
+                    "map-inside-2-1",
+                    "map-inside-2-1",
+                    "map-inside-2-1",
+                    "map-inside-2-1"
+                ]
+            },
+            {
+                "buildNum":3,
+                "floorImg":[
+                    "map-inside-2-1",
+                    "map-inside-2-1",
+                    "map-inside-2-1",
+                    "map-inside-2-1"
+                ]
+            },
+            {
+                "buildNum":5,
+                "floorImg":[
+                    "map-inside-2-1",
+                    "map-inside-2-1"
+                ]
+            },
+            {
+                "buildNum":8,
+                "floorImg":[
+                    "map-inside-2-1",
+                    "map-inside-2-1"
+                ]
             }
-        }
+        ]
     }
 }

@@ -126,7 +126,7 @@ function init(event){
       g_rects.push(g_rect);
     }
     // :: 構内へ、の矢印
-    var toCampusArrow = new createjs.Bitmap("./imgs/" + j_mapImgsData.ToCampusArrow);　// *p
+    var toCampusArrow = new createjs.Bitmap("./imgs/" + j_mapImgsData.ToCampusArrow); // *p
     // 位置、角度のセット
     toCampusArrow.scaleX = gm_general.scaleX * 0.8;
     toCampusArrow.scaleY = gm_general.scaleY * 0.8;
@@ -196,7 +196,6 @@ function init(event){
     var cm_img = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.top);
     var cm_size = await getImageSize(cm_img);
     var c_rects = [];
-    var c_balloons = []; // 吹き出したち
     // canvasのサイズに画像を合わせる。
     if((canvasElement.width/cm_size[0]) * cm_size[1] > canvasElement.height){
       // 縦横比が合わないと高さがcanvasを超える問題の対処
@@ -210,11 +209,11 @@ function init(event){
     }
     InsideTopContainer.addChild(cm_img);
     // :: 構外へ、の矢印
-    var toOutsideArrow = new createjs.Bitmap("./imgs/" + j_mapImgsData.ToOutsideArrow);　// *p
+    var toOutsideArrow = new createjs.Bitmap("./imgs/" + j_mapImgsData.ToOutsideArrow); // *p
     // 位置、角度のセット
-    toOutsideArrow.scaleX = gm_general.scaleX;
-    toOutsideArrow.scaleY = gm_general.scaleY;
-    toOutsideArrow.x      = 300 * gm_general.scaleX; // *z 座標を入れよう
+    toOutsideArrow.scaleX = gm_general.scaleX * 0.14;
+    toOutsideArrow.scaleY = gm_general.scaleY * 0.14;
+    toOutsideArrow.x      = 250 * gm_general.scaleX; // *z 座標を入れよう
     toOutsideArrow.y      = 100 * gm_general.scaleY; // *z
     InsideTopContainer.addChild(toOutsideArrow);
     // :: 構内棟ごとのエリア
@@ -231,14 +230,34 @@ function init(event){
       c_rects.push(c_rect);
     }
     // :: 構内マップに表示される吹き出し
+    var balloonContainers = []; // 吹き出しと同時に表示されるオブジェクトが格納される
+    var c_balloons = []; // 吹き出したち
+    var c_balloonRects = []; // 吹き出しに載せられる
+    //吹き出しとその上に配置されるオブジェクトの配置
     for(i=0;i<j_mapImgsData.Campus.balloons.length;i++){
+      //吹き出しの配置
+      var BalloonContainer = new createjs.Container();
       var j_balloon = j_mapImgsData.Campus.balloons[i];
+      var j_balloonRect = j_mapImgsData.Campus.balloonRects[i];
       var c_balloon = new createjs.Bitmap("./imgs/" + j_balloon.img);
       c_balloon.scaleX = gm_general.scaleX * 0.26; // *z スケール調整
       c_balloon.scaleY = gm_general.scaleY *0.26; // *z
       c_balloon.x = j_balloon.x * gm_general.scaleX;
       c_balloon.y = j_balloon.y * gm_general.scaleY;
+      BalloonContainer.addChild(c_balloon);
       c_balloons.push(c_balloon);
+      // 吹き出しの上の四角形たちの配置
+      for(j=0;j<j_balloonRect.length;j++){
+        var c_balloonRect = new createjs.Shape();
+        c_balloonRect.graphics.beginFill("DarkRed");
+        c_balloonRect.graphics.drawRect(0,0,j_balloonRect[j].width * gm_general.scaleX,j_balloonRect[j].height * gm_general.scaleY);
+        c_balloonRect.x = j_balloonRect[j].x * gm_general.scaleX; // 位置座標セット
+        c_balloonRect.y = j_balloonRect[j].y * gm_general.scaleY; // 位置座標セット
+        c_balloonRect.alpha = 1;                      // 透明度
+        BalloonContainer.addChild(c_balloonRect);
+        c_balloonRects.push(c_balloonRect);
+      }
+      balloonContainers.push(BalloonContainer);
     }
     //event
     var e_balloons = []; //吹き出しが出ていれば 1 出ていなければ0
@@ -248,8 +267,8 @@ function init(event){
     EventListener();
     //初期状態にする。
     //全体MAPを表示する。
-    DisplayContainer.addChild(OutsideContainer);
-    //DisplayContainer.addChild(InsideTopContainer);
+    //DisplayContainer.addChild(OutsideContainer);
+    DisplayContainer.addChild(InsideTopContainer);
     // -- eventListener
     function EventListener(){
       // 構内への矢印に対する処理
@@ -314,18 +333,18 @@ function init(event){
       //console.log(e_balloonTarget);
       // すでに出ている吹き出しをクリックしたとき
       if(e_balloons[e_balloonTarget] == 1){
-        InsideTopContainer.removeChild(c_balloons[e_balloonTarget]);
+        InsideTopContainer.removeChild(balloonContainers[e_balloonTarget]);
         e_balloons[e_balloonTarget] = 0;
         return;
       }
       // クリックしたときにほかの吹き出しが開いていた時
       for(var j=0;j<c_balloons.length;j++){
         if(e_balloons[j] == 1){
-          InsideTopContainer.removeChild(c_balloons[j]);
+          InsideTopContainer.removeChild(balloonContainers[j]);
           e_balloons[j] =0;
         }
       }
-      InsideTopContainer.addChild(c_balloons[e_balloonTarget]);
+      InsideTopContainer.addChild(balloonContainers[e_balloonTarget]);
       e_balloons[e_balloonTarget] = 1;
     }
     // 構内Topから各棟へ
