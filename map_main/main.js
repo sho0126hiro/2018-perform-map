@@ -269,6 +269,7 @@ function init(event){
     var bfm_sizes_tmp = []; // await時間短縮用
     var bfm_sizes = []; // await時間短縮用
     var bf_toCampusTops = []; // 構内マップTOPへ飛ぶ矢印
+    var bf_pins = []; // 構内の全てのピン格納用　bf_pins[棟][階][ピン番号]
     //各フロア拡大画像のサイズの取得
     for(i=0;i<j_mapImgsData.Campus.buildings.length;i++){
       bfm_sizes_tmp[i] = []; // 2次元配列化
@@ -286,10 +287,10 @@ function init(event){
     //各フロアオブジェクトの配置
     for(i=0;i<j_mapImgsData.Campus.buildings.length;i++){
       var FloorContainers = []; 
-      bf_toCampusTops[i] = []; //i棟の中にある全体への画像が格納される（後に.push）     
+      bf_toCampusTops[i] = []; //i棟の中にある全体への画像が格納される（後に.push）
+      var b_pins = [];     
       for(j=0;j<j_mapImgsData.Campus.buildings[i].floorImg.length;j++){
         var FloorContainer = new createjs.Container();
-        var f_PinContainer = new createjs.Container(); // ピンがいっぱい入る
         // 各フロアの拡大画像の配置 // *p
         var fm_img = new createjs.Bitmap("./imgs/"+ j_mapImgsData.Campus.buildings[i].floorImg[j]);
         var fm_size = bfm_sizes[i][j];
@@ -307,28 +308,29 @@ function init(event){
         }
         FloorContainer.addChild(fm_img);
         // ピンの処理
-        var bf_pins =[]; // bf_pins[棟][階][ピン番  号]
-        var bf_PinContainers = new createjs.Container();
-        var bf_pin1Tmp = new createjs.Bitmap("./imgs/"+j_mapImgsData.PinImg_1);
-        var bf_pin1Size = await getImageSize(bf_pin1Tmp); // pinの画像サイズを取得
+        var f_pins =[]; 
+        var f_PinContainer = new createjs.Container();
+        var f_pin1Tmp = new createjs.Bitmap("./imgs/"+j_mapImgsData.PinImg_1);
+        var f_pin1Size = await getImageSize(f_pin1Tmp); // pinの画像サイズを取得
         for(k=0;k<j_mapImgsData.Campus.buildings[i].pins[j].length;k++){
-          // ** ここまでやった
-          var a_pin = new createjs.Bitmap("./imgs/"+j_mapImgsData.PinImg_1);
-          a_pin.scaleX = gm_general.scaleX;
-          a_pin.scaleY = gm_general.scaleY;
-          a_pin.x = j_mapImgsData.OutsideAreas[i].pins[j].x * gm_general.scaleX;
-          a_pin.y = j_mapImgsData.OutsideAreas[i].pins[j].y * gm_general.scaleY;
-          a_PinContainer.addChild(a_pin);
-          var a_pin_rect = new createjs.Shape();
-          a_pin_rect.graphics.beginFill("DarkRed");
-          a_pin_rect.graphics.drawRect(0,0,pin1Size[0] * a_pin.scaleX,pin1Size[1] * a_pin.scaleY);      
-          a_pin_rect.x = a_pin.x;
-          a_pin_rect.y = a_pin.y;
-          a_pin_rect.alpha = 0.0059; // *z 透明度の変更
-          a_PinContainer.addChild(a_pin_rect);
-          a_pins.push(a_pin_rect);//pinの上に係る四角形たちを入れる（クリック判定は透明の四角形）
+          var f_pin = new createjs.Bitmap("./imgs/"+j_mapImgsData.PinImg_1);
+          f_pin.scaleX = gm_general.scaleX;
+          f_pin.scaleY = gm_general.scaleY;
+          f_pin.x = j_mapImgsData.Campus.buildings[i].pins[j][k].x * gm_general.scaleX;
+          f_pin.y = j_mapImgsData.Campus.buildings[i].pins[j][k].y * gm_general.scaleY;
+          f_PinContainer.addChild(f_pin);
+          var f_pin_rect = new createjs.Shape();
+          f_pin_rect.graphics.beginFill("DarkRed");
+          f_pin_rect.graphics.drawRect(0,0,f_pin1Size[0] * f_pin.scaleX,f_pin1Size[1] * f_pin.scaleY);      
+          f_pin_rect.x = f_pin.x;
+          f_pin_rect.y = f_pin.y;
+          f_pin_rect.alpha = 0.3; // *z 透明度の変更          
+          //f_pin_rect.alpha = 0.0059; // *z 透明度の変更
+          f_PinContainer.addChild(f_pin_rect);
+          f_pins.push(f_pin_rect);//pinの上に係る四角形たちを入れる（クリック判定は透明の四角形）
         }
-        outSidePins_r.push(a_pins);
+        b_pins.push(f_pins);
+        FloorContainer.addChild(f_PinContainer);
         // 上の階へ
         // 下の階へ
         // 構内TOPへの画像の配置 // *p
@@ -341,6 +343,7 @@ function init(event){
         bf_toCampusTops[i].push(f_toCampusTop);
         FloorContainers.push(FloorContainer);
       }
+      bf_pins.push(b_pins);
       bf_toCampusTops.push(bf_toCampusTops[i]); // forループ出たときi+1されるので-1をしている
       BuildingFloorContainers.push(FloorContainers);
       //console.log(bf_toCampusTops);
@@ -374,7 +377,7 @@ function init(event){
         a_toGenerals[i].eventParam = i;
         // 構外MAPピンに対する処理
         for(j=0;j<j_mapImgsData.OutsideAreas[i].pins.length;j++){
-          outSidePins_r[i][j].addEventListener("click",WriteInfo);
+          outSidePins_r[i][j].addEventListener("click",OutsideWriteInfo);
           outSidePins_r[i][j].eventParam  = i;
           outSidePins_r[i][j].eventParam2 = j;
         }
@@ -401,7 +404,21 @@ function init(event){
           bf_toCampusTops[i][j].eventParam2 = j;
         }
       }
+      // 構内の各ピンに対する処理
+      for(i=0;i<bf_pins.length;i++){
+        for(j=0;j<bf_pins[i].length;j++){
+          for(k=0;k<bf_pins[i][j].length;k++){
+            bf_pins[i][j][k].addEventListener("click",InsideWriteInfo);
+            bf_pins[i][j][k].eventParam = i;
+            bf_pins[i][j][k].eventParam2 = j;
+            bf_pins[i][j][k].eventParam3 = k;
+          }
+        }
+      }
+      // 上の階へのボタンに対する処理
+      // 下の階へのボタンに対する処理
     }//ここまでEventListener
+
     // 全体画面から各エリアへ飛ぶ
     function GeneraltoArea(event){
       var i = event.target.eventParam;
@@ -488,10 +505,17 @@ function init(event){
       DisplayContainer.addChild(NextContainer);
     }
     // 情報を書き込む（DOM出力）
-    function WriteInfo(event){
+    function OutsideWriteInfo(event){
       var i = event.target.eventParam;
       var j = event.target.eventParam2;
       h_shopname.textContent = "エリア"+g_areaTexts[i]+"の"+j+"番目";
+    }
+    //
+    function InsideWriteInfo(event){
+      var i = event.target.eventParam;
+      var j = event.target.eventParam2;
+      var k = event.target.eventParam3;
+      h_shopname.textContent = i+"棟"+j+"階の"+k+"番目のピン";
     }
   }// ここまでmain
   //Resize
