@@ -22,7 +22,7 @@ function Load(){
   var queue = new createjs.LoadQueue(true);
   // *p
   var manifest = [
-    {"src":"./JSON/mapImgData.json","id":"mapImgs"}
+    {"src":"./JSON/mapImgData1.json","id":"mapImgs"}
   ]
   /*
   // ** 後で足せ
@@ -214,8 +214,8 @@ function init(event){
     // :: 構外へ、の矢印
     var toOutsideArrow = new createjs.Bitmap("./imgs/" + j_mapImgsData.ToOutsideArrow); // *p
     // 位置、角度のセット
-    toOutsideArrow.scaleX = gm_general.scaleX * 0.14;
-    toOutsideArrow.scaleY = gm_general.scaleY * 0.14;
+    toOutsideArrow.scaleX = gm_general.scaleX * 1;
+    toOutsideArrow.scaleY = gm_general.scaleY * 1;
     toOutsideArrow.x      = 250 * gm_general.scaleX; // *z 座標を入れよう
     toOutsideArrow.y      = 100 * gm_general.scaleY; // *z
     InsideTopContainer.addChild(toOutsideArrow);
@@ -324,8 +324,7 @@ function init(event){
           f_pin_rect.graphics.drawRect(0,0,f_pin1Size[0] * f_pin.scaleX,f_pin1Size[1] * f_pin.scaleY);      
           f_pin_rect.x = f_pin.x;
           f_pin_rect.y = f_pin.y;
-          f_pin_rect.alpha = 0.3; // *z 透明度の変更          
-          //f_pin_rect.alpha = 0.0059; // *z 透明度の変更
+          f_pin_rect.alpha = 0.0059; // *z 透明度の変更
           f_PinContainer.addChild(f_pin_rect);
           f_pins.push(f_pin_rect);//pinの上に係る四角形たちを入れる（クリック判定は透明の四角形）
         }
@@ -349,9 +348,8 @@ function init(event){
       //console.log(bf_toCampusTops);
     }
     bf_toCampusTops.pop(); // 末尾の要素を削除
-    console.log(bf_toCampusTops);
-    console.log(BuildingFloorContainers);
-
+    //console.log(bf_toCampusTops);
+    //console.log(BuildingFloorContainers);
     //event
     var e_balloons = []; //吹き出しが出ていれば 1 出ていなければ0
     var e_buildNum = [2,3,5,8]; // 棟の番号
@@ -360,8 +358,9 @@ function init(event){
     EventListener();
     // :: 初期状態にする。
     // :: 全体MAPを表示する。
-    // DisplayContainer.addChild(OutsideContainer);
-    DisplayContainer.addChild(InsideTopContainer);
+    DisplayContainer.addChild(OutsideContainer);
+    //DisplayContainer.addChild(InsideTopContainer);
+    //d_DisplayContainerInit(BuildingFloorContainers[0][1]);
     // -- eventListener
     function EventListener(){
       // 構内への矢印に対する処理
@@ -517,15 +516,23 @@ function init(event){
       var k = event.target.eventParam3;
       h_shopname.textContent = i+"棟"+j+"階の"+k+"番目のピン";
     }
+    // debug用 DisplayContainerに最初に格納する要素を入れる
+    function d_DisplayContainerInit(initContainer){
+      DisplayContainer.addChild(initContainer);
+    }
+    function d_UpdateCache(Container){
+      Container.updateCache();
+    }
+    // 画面更新
+    createjs.Ticker.timingMode = createjs.Ticker.RAF;
+    createjs.Ticker.on("tick",function(){
+      stage.update();
+      DisplayContainer.updateCache();
+    });
   }// ここまでmain
   //Resize
   window.addEventListener('resize' , function(){
     (!window.requestAnimationFrame) ? this.setTimeout(Sizing) : window,requestAnimationFrame(Sizing);
   });
-  // 画面更新
-  createjs.Ticker.timingMode = createjs.Ticker.RAF;
-  createjs.Ticker.on("tick",function(){
-    stage.update();
-    DisplayContainer.updateCache();
-  });
+  
 }
