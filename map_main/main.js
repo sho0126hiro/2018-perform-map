@@ -270,6 +270,8 @@ function init(event){
     var bfm_sizes = []; // await時間短縮用
     var bf_toCampusTops = []; // 構内マップTOPへ飛ぶ矢印
     var bf_pins = []; // 構内の全てのピン格納用　bf_pins[棟][階][ピン番号]
+    var bf_toUpper = []; // 上の階へ
+    var bf_toLower = [];
     //各フロア拡大画像のサイズの取得
     for(i=0;i<j_mapImgsData.Campus.buildings.length;i++){
       bfm_sizes_tmp[i] = []; // 2次元配列化
@@ -288,6 +290,8 @@ function init(event){
     for(i=0;i<j_mapImgsData.Campus.buildings.length;i++){
       var FloorContainers = []; 
       bf_toCampusTops[i] = []; //i棟の中にある全体への画像が格納される（後に.push）
+      bf_toUpper[i] = [];
+      bf_toLower[i] = [];
       var b_pins = [];     
       for(j=0;j<j_mapImgsData.Campus.buildings[i].floorImg.length;j++){
         var FloorContainer = new createjs.Container();
@@ -331,7 +335,49 @@ function init(event){
         b_pins.push(f_pins);
         FloorContainer.addChild(f_PinContainer);
         // 上の階へ
+        var f_goULcheck = 0; // 設置したら1、設置しないなら0
+        for(var k=0;k<j_mapImgsData.Campus.buildings[i].goUpper.length;k++){
+          // このフロア(j)に上の階へのオブジェクトのデータが格納されていたら
+          if(j_mapImgsData.Campus.buildings[i].goUpper[k].floor == j){
+            // 上の階へbuttonの設置
+            if(i== 3 && j == 0){
+              bf_toUpper[i][j] = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.goUpperFloorImg_8);
+            }else{
+              bf_toUpper[i][j] = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.goUpperFloorImg);
+            }
+            bf_toUpper[i][j].scaleX = gm_general.scaleX;
+            bf_toUpper[i][j].scaleY = gm_general.scaleY;
+            bf_toUpper[i][j].x = j_mapImgsData.Campus.buildings[i].goUpper[k].x;
+            bf_toUpper[i][j].y = j_mapImgsData.Campus.buildings[i].goUpper[k].y;
+            FloorContainer.addChild(bf_toUpper[i][j]);
+            f_goULcheck = 1;
+          }
+        }
+        if(f_goULcheck == 0)bf_toUpper[i][j] = -1; // 上の階へがない場合-1を格納
+        
         // 下の階へ
+        f_goULcheck = 0; // 初期化
+        for(var k=0;k<j_mapImgsData.Campus.buildings[i].goLower.length;k++){
+          // このフロア(j)に下の階へのオブジェクトのデータが格納されていたら
+          if(j_mapImgsData.Campus.buildings[i].goLower[k].floor == j){
+            // 下の階へbuttonの設置
+            if(i== 3 && j == 1){
+              //8棟3階の処理　ここだけ1階への画像になる
+              bf_toLower[i][j] = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.goLowerFloorImg_8);
+            }else{
+              // それ以外の普通の棟
+              bf_toLower[i][j] = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.goLowerFloorImg);
+            }
+            bf_toLower[i][j].scaleX = gm_general.scaleX;
+            bf_toLower[i][j].scaleY = gm_general.scaleY;
+            bf_toLower[i][j].x = j_mapImgsData.Campus.buildings[i].goLower[k].x;
+            bf_toLower[i][j].y = j_mapImgsData.Campus.buildings[i].goLower[k].y;
+            FloorContainer.addChild(bf_toLower[i][j]);
+            f_goULcheck = 1;
+          }
+        }
+        if(f_goULcheck == 0)bf_toLower[i][j] = -1; // 下の階へがない場合-1を格納
+
         // 構内TOPへの画像の配置 // *p
         var f_toCampusTop = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.goTopArrow);
         f_toCampusTop.scaleX = gm_general.scaleX;
@@ -415,7 +461,25 @@ function init(event){
         }
       }
       // 上の階へのボタンに対する処理
+      for(var i=0;i<bf_toUpper.length;i++){
+        for(var j=0;j<bf_toUpper[i].length;j++){
+          if(bf_toUpper[i][j]!=-1){
+            bf_toUpper[i][j].addEventListener("click",FloortoUpperFloor);
+            bf_toUpper[i][j].eventParam = i;
+            bf_toUpper[i][j].eventParam2 = j;
+          }
+        }
+      }
       // 下の階へのボタンに対する処理
+      for(var i=0;i<bf_toLower.length;i++){
+        for(var j=0;j<bf_toLower[i].length;j++){
+          if(bf_toLower[i][j]!=-1){
+            bf_toLower[i][j].addEventListener("click",FloortoLowerFloor);
+            bf_toLower[i][j].eventParam = i;
+            bf_toLower[i][j].eventParam2 = j;
+          }
+        }
+      }
     }//ここまでEventListener
 
     // 全体画面から各エリアへ飛ぶ
@@ -434,6 +498,13 @@ function init(event){
     }
     // 構内Topから全体へ
     function CampusToptoGeneral(event){
+      // 吹き出しが出ていたらそれを消す
+      for(k=0;k<c_balloons.length;k++){
+        if(e_balloons[k] == 1){
+          InsideTopContainer.removeChild(balloonContainers[k]);
+          e_balloons[k] =0;
+        }
+      }
       MapChange(InsideTopContainer,OutsideContainer);
     }
     // 構内Topから吹き出しを出力
@@ -498,6 +569,20 @@ function init(event){
       var buildingIndex = [0,1,3]; //吹き出しから飛べる棟番号(e_balloonBuildNumに対応)
       MapChange(BuildingFloorContainers[i][j],InsideTopContainer);
     }
+    // 上の階へ
+    function FloortoUpperFloor(event){
+      var i = event.target.eventParam;
+      var j = event.target.eventParam2;
+      if(bf_toUpper[i][j]==-1)return;
+      MapChange(BuildingFloorContainers[i][j],BuildingFloorContainers[i][j+1]);
+    }
+    // 下の階へ
+    function FloortoLowerFloor(event){
+      var i = event.target.eventParam;
+      var j = event.target.eventParam2;
+      if(bf_toLower[i][j]==-1)return;
+      MapChange(BuildingFloorContainers[i][j],BuildingFloorContainers[i][j-1]);
+    }
     // 現在のページから次のページに切り替わる >>
     function MapChange(CurrentContainer,NextContainer){
       DisplayContainer.removeChild(CurrentContainer);
@@ -509,13 +594,14 @@ function init(event){
       var j = event.target.eventParam2;
       h_shopname.textContent = "エリア"+g_areaTexts[i]+"の"+j+"番目";
     }
-    //
+    // 情報を書き込む（構内）
     function InsideWriteInfo(event){
       var i = event.target.eventParam;
       var j = event.target.eventParam2;
       var k = event.target.eventParam3;
       h_shopname.textContent = i+"棟"+j+"階の"+k+"番目のピン";
     }
+    
     // debug用 DisplayContainerに最初に格納する要素を入れる
     function d_DisplayContainerInit(initContainer){
       DisplayContainer.addChild(initContainer);
