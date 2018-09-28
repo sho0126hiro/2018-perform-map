@@ -121,9 +121,9 @@
                 "buildNum":2,
                 "floorImg":[
                     "map-inside-2-1.png",
-                    "map_test_hukidasi.JPG",
-                    "map-inside-2-1.png",
-                    "map-inside-2-1.png"
+                    "map-inside-2-2.png",
+                    "map-inside-2-3.png",
+                    "map-inside-2-4.png"
                 ],
                 "pins":[
                     [
@@ -186,7 +186,7 @@
             {
                 "buildNum":5,
                 "floorImg":[
-                    "map-inside-2-1.png",
+                    "neko.jpg",
                     "map-inside-2-1.png"
                 ],
                 "pins":[
