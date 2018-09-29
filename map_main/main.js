@@ -207,8 +207,8 @@ function init(event){
       a_toGenerals.push(a_toGeneral);
       // ---- 2.2.4 各エリアに配置される「ピンを表示する画像」の設置 ------------------------------
       var a_toDisplayPin = new createjs.Bitmap("./imgs/" + j_mapImgsData.ToDisplayPinImg); // *p
-      a_toDisplayPin.scaleX = gm_general.scaleX;
-      a_toDisplayPin.scaleY = gm_general.scaleY;
+      a_toDisplayPin.scaleX = gm_general.scaleX * 0.9;
+      a_toDisplayPin.scaleY = gm_general.scaleY * 0.9;
       a_toDisplayPin.x      = j_mapImgsData.OutsideAreas[i].toDisplayPins.x * gm_general.scaleX;
       a_toDisplayPin.y      = j_mapImgsData.OutsideAreas[i].toDisplayPins.y * gm_general.scaleY;
       a_toDisplayPin.alpha  = 0;
@@ -216,8 +216,8 @@ function init(event){
       a_toDisplayPins.push(a_toDisplayPin);
       // ---- 2.2.5 各エリアに配置される「ピンを非表示にする画像」の設置 --------------------------
       var a_toHidePin = new createjs.Bitmap("./imgs/" + j_mapImgsData.ToHidePinImg); // *p
-      a_toHidePin.scaleX = gm_general.scaleX;
-      a_toHidePin.scaleY = gm_general.scaleY;
+      a_toHidePin.scaleX = gm_general.scaleX * 0.9;
+      a_toHidePin.scaleY = gm_general.scaleY * 0.9;
       a_toHidePin.x      = j_mapImgsData.OutsideAreas[i].toHidePins.x * gm_general.scaleX;
       a_toHidePin.y      = j_mapImgsData.OutsideAreas[i].toHidePins.y * gm_general.scaleY;
       a_toHidePin.alpha = 1;
@@ -448,8 +448,8 @@ function init(event){
         
         // ---- 4.2.10 「ピンを表示する画像」の設置 -----------------------------------------------
         var f_toDisplayPin = new createjs.Bitmap("./imgs/" + j_mapImgsData.ToDisplayPinImg); // *p
-        f_toDisplayPin.scaleX = gm_general.scaleX;
-        f_toDisplayPin.scaleY = gm_general.scaleY;
+        f_toDisplayPin.scaleX = gm_general.scaleX * 0.9;
+        f_toDisplayPin.scaleY = gm_general.scaleY * 0.9;
         f_toDisplayPin.x      = j_mapImgsData.Campus.buildings[i].toDisplayPins[j].x * gm_general.scaleX;
         f_toDisplayPin.y      = j_mapImgsData.Campus.buildings[i].toDisplayPins[j].y * gm_general.scaleY;
         f_toDisplayPin.alpha  = 0;
@@ -457,8 +457,8 @@ function init(event){
         bf_toDisplayPins[i].push(f_toDisplayPin);
         // ---- 4.2.11 「ピンを非表示にする画像」の設置 -------------------------------------------
         var f_toHidePin = new createjs.Bitmap("./imgs/" + j_mapImgsData.ToHidePinImg); // *p
-        f_toHidePin.scaleX = gm_general.scaleX;
-        f_toHidePin.scaleY = gm_general.scaleY;
+        f_toHidePin.scaleX = gm_general.scaleX * 0.9;
+        f_toHidePin.scaleY = gm_general.scaleY * 0.9;
         f_toHidePin.x      = j_mapImgsData.Campus.buildings[i].toHidePins[j].x * gm_general.scaleX;
         f_toHidePin.y      = j_mapImgsData.Campus.buildings[i].toHidePins[j].y * gm_general.scaleY;
         f_toHidePin.alpha  = 1;
