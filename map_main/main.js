@@ -680,50 +680,90 @@ function init(event){
     // ピンを表示 -----------------------------------------------------------------------
     function DisplayPins(event){
       //var i = event.target.eventParam;
+      var TimeLine = new createjs.Timeline();
+      var changetime = 500;
       console.log("hyouzisuruyo");
       for(var i=0;i<a_pinContainers.length;i++){
         for(var j=0;j<a_pinContainers[i].children.length/2;j++){
-          a_pinContainers[i].children[2*j].alpha = 1;
+          TimeLine.addTween(
+            createjs.Tween.get(a_pinContainers[i].children[2*j],{override:false})
+              .to({alpha : 1},changetime)
+          );
           a_pinContainers[i].children[2*j + 1].visible = true;
         }
-        a_toDisplayPins[i].alpha = 0;
-        a_toHidePins[i].alpha = 1;
+        TimeLine.addTween(
+          createjs.Tween.get(a_toDisplayPins[i],{override:false})
+            .to({alpha : 0},changetime)
+        );
+        TimeLine.addTween(
+          createjs.Tween.get(a_toHidePins[i],{override:false})
+            .to({alpha : 1},changetime)
+        );
       }
       for(var i=0;i<bf_toDisplayPins.length;i++){
         for(var j=0;j<bf_toDisplayPins[i].length;j++){
           // f_PinContainersにアクセスする
           for(var k=0;k<BuildingFloorContainers[i][j].children[1].children.length/2;k++){
-            BuildingFloorContainers[i][j].children[1].children[2*k].alpha   = 1;
+            TimeLine.addTween(
+              createjs.Tween.get(BuildingFloorContainers[i][j].children[1].children[2*k],{override:false})
+                .to({alpha : 1},changetime)
+            );
             BuildingFloorContainers[i][j].children[1].children[2*k+1].visible = true;
           }
-          bf_toDisplayPins[i][j].alpha = 0;
-          bf_toHidePins[i][j].alpha = 1;
+          TimeLine.addTween(
+            createjs.Tween.get(bf_toDisplayPins[i][j],{override:false})
+              .to({alpha : 0},changetime)
+          );
+          TimeLine.addTween(
+            createjs.Tween.get(bf_toHidePins[i][j],{override:false})
+              .to({alpha : 1},changetime)
+          );
         }
       }
     }
     // ピンを非表示 ---------------------------------------------------------------------
     function HidePins(event){
       //var i = event.target.eventParam;
-      console.log("hihyouzinisuruyo");
+      var TimeLine = new createjs.Timeline();
+      var changetime = 500;
       for(var i=0;i<a_pinContainers.length;i++){
         for(var j=0;j<a_pinContainers[i].children.length/2;j++){
-          a_pinContainers[i].children[2*j].alpha = 0;
+          TimeLine.addTween(
+            createjs.Tween.get(a_pinContainers[i].children[2*j],{override:false})
+              .to({alpha : 0},changetime)
+          );
           a_pinContainers[i].children[2*j + 1].visible = false;
         }
-        a_toDisplayPins[i].alpha = 1;
-        a_toHidePins[i].alpha = 0;
+        TimeLine.addTween(
+          createjs.Tween.get(a_toDisplayPins[i],{override:false})
+            .to({alpha : 1},changetime)
+        );
+        TimeLine.addTween(
+          createjs.Tween.get(a_toHidePins[i],{override:false})
+            .to({alpha : 0},changetime)
+        );
       }
       for(var i=0;i<bf_toDisplayPins.length;i++){
         for(var j=0;j<bf_toDisplayPins[i].length;j++){
           // f_PinContainersにアクセスする
           for(var k=0;k<BuildingFloorContainers[i][j].children[1].children.length/2;k++){
-            BuildingFloorContainers[i][j].children[1].children[2*k].alpha   = 0;
+            TimeLine.addTween(
+              createjs.Tween.get(BuildingFloorContainers[i][j].children[1].children[2*k],{override:false})
+                .to({alpha : 0},changetime)
+            );
             BuildingFloorContainers[i][j].children[1].children[2*k+1].visible = false;
           }
-          bf_toDisplayPins[i][j].alpha = 1;
-          bf_toHidePins[i][j].alpha = 0;
+          TimeLine.addTween(
+            createjs.Tween.get(bf_toDisplayPins[i][j],{override:false})
+              .to({alpha : 1},changetime)
+          );
+          TimeLine.addTween(
+            createjs.Tween.get(bf_toHidePins[i][j],{override:false})
+              .to({alpha : 0},changetime)
+          );
         }
       }
+      TimeLine.gotoAndPlay("start");
     }
     // DOMに情報を書き込む（構外）-------------------------------------------------------
     function OutsideWriteInfo(event){

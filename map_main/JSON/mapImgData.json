@@ -108,7 +108,7 @@
         "buildingRects":[
             {"x":1200,"y":1100,"width":1440,"height":280,"color":"DarkRed"},
             {"x":1200,"y":560,"width":1440,"height":280,"color":"DarkRed"},
-            {"x":2220,"y":30,"width":420,"height":280,"color":"DarkRed"},
+            {"x":1200,"y":30,"width":1440,"height":280,"color":"DarkRed"},
             {"x":700,"y":1640,"width":510,"height":280,"color":"DarkRed"}
         ],
         "balloons":[
@@ -318,12 +318,12 @@
                     {"x":-10,"y":-30}
                 ],
                 "toDisplayPins":[
-                    {"x":100,"y":1200},
-                    {"x":100,"y":1200}
+                    {"x":100,"y":800},
+                    {"x":100,"y":800}
                 ],
                 "toHidePins":[
-                    {"x":100,"y":1200},
-                    {"x":100,"y":1200}
+                    {"x":100,"y":800},
+                    {"x":100,"y":800}
                 ]
             }
         ]
