@@ -22,7 +22,7 @@ function Load(){
   // load JSON // *p
   var queue = new createjs.LoadQueue(true);
   var manifest = [
-    {"src":"./JSON/mapImgData1.json","id":"mapImgs"}
+    {"src":"./JSON/mapImgData.json","id":"mapImgs"}
   ]
   /*
   // ** 後で足せ
@@ -128,10 +128,10 @@ function init(event){
     // --- 1.2 構外MAP全体画像の配置 --------------------------------------------------------------
     var toCampusArrow = new createjs.Bitmap("./imgs/" + j_mapImgsData.ToCampusArrow); // *p
     // 位置、角度のセット
-    toCampusArrow.scaleX   = gm_general.scaleX * 0.8;
-    toCampusArrow.scaleY   = gm_general.scaleY * 0.8;
-    toCampusArrow.x        = 3000 * gm_general.scaleX; // *z 座標を入れよう
-    toCampusArrow.y        = 300 * gm_general.scaleY;  // *z
+    toCampusArrow.scaleX   = gm_general.scaleX * 0.9;
+    toCampusArrow.scaleY   = gm_general.scaleY * 0.9;
+    toCampusArrow.x        = 2600 * gm_general.scaleX; // *z 座標を入れよう
+    toCampusArrow.y        = 200 * gm_general.scaleY;  // *z
     OutsideContainer.addChild(toCampusArrow);
 
     // --- 2. 小エリアの配置 ------------------------------------------------------------------------------------------
@@ -226,10 +226,10 @@ function init(event){
     // ---  3.2「構外への矢印画像」の設置 ---------------------------------------------------------
     var toOutsideArrow = new createjs.Bitmap("./imgs/" + j_mapImgsData.ToOutsideArrow); // *p
     // 位置、角度のセット
-    toOutsideArrow.scaleX = gm_general.scaleX * 1;
-    toOutsideArrow.scaleY = gm_general.scaleY * 1;
-    toOutsideArrow.x      = 250 * gm_general.scaleX; // *z 座標を入れよう
-    toOutsideArrow.y      = 100 * gm_general.scaleY; // *z
+    toOutsideArrow.scaleX = gm_general.scaleX * 0.9;
+    toOutsideArrow.scaleY = gm_general.scaleY * 0.9;
+    toOutsideArrow.x      = 200 * gm_general.scaleX; // *z 座標を入れよう
+    toOutsideArrow.y      = 50 * gm_general.scaleY; // *z
     InsideTopContainer.addChild(toOutsideArrow);
     // --- 3.3 構内から棟に飛ぶ時の四角 (吹き出しを出すものもある) --------------------------------
     for(var i=0;i<j_mapImgsData.Campus.buildingRects.length;i++){
@@ -377,8 +377,8 @@ function init(event){
             }
             bf_toUpper[i][j].scaleX = gm_general.scaleX;
             bf_toUpper[i][j].scaleY = gm_general.scaleY;
-            bf_toUpper[i][j].x      = j_mapImgsData.Campus.buildings[i].goUpper[k].x;
-            bf_toUpper[i][j].y      = j_mapImgsData.Campus.buildings[i].goUpper[k].y;
+            bf_toUpper[i][j].x      = j_mapImgsData.Campus.buildings[i].goUpper[k].x * gm_general.scaleY;
+            bf_toUpper[i][j].y      = j_mapImgsData.Campus.buildings[i].goUpper[k].y * gm_general.scaleY;
             FloorContainer.addChild(bf_toUpper[i][j]);
             f_goULcheck = 1;
           }
@@ -403,8 +403,8 @@ function init(event){
             }
             bf_toLower[i][j].scaleX = gm_general.scaleX;
             bf_toLower[i][j].scaleY = gm_general.scaleY;
-            bf_toLower[i][j].x      = j_mapImgsData.Campus.buildings[i].goLower[k].x;
-            bf_toLower[i][j].y      = j_mapImgsData.Campus.buildings[i].goLower[k].y;
+            bf_toLower[i][j].x      = j_mapImgsData.Campus.buildings[i].goLower[k].x * gm_general.scaleY;
+            bf_toLower[i][j].y      = j_mapImgsData.Campus.buildings[i].goLower[k].y * gm_general.scaleY;
             FloorContainer.addChild(bf_toLower[i][j]);
             f_goULcheck = 1;
           }
@@ -523,7 +523,8 @@ function init(event){
     }
     // 全体から構内topへ ---------------------------------------------------------------
     function GeneraltoCampusTop(event){
-      MapChange(OutsideContainer,InsideTopContainer);
+      //MapChange(OutsideContainer,InsideTopContainer);
+      MapChangeAnimation_Slide(OutsideContainer,InsideTopContainer,"right");
     }
     // 構内Topから全体へ ----------------------------------------------------------------
     function CampusToptoGeneral(event){
@@ -534,7 +535,8 @@ function init(event){
           e_balloons[k] = 0;
         }
       }
-      MapChange(InsideTopContainer,OutsideContainer);
+      //MapChange(InsideTopContainer,OutsideContainer);
+      MapChangeAnimation_Slide(InsideTopContainer,OutsideContainer,"left");      
     }
     // 構内Topから吹き出しを出力 --------------------------------------------------------
     function SetBalloon(event){
@@ -594,26 +596,24 @@ function init(event){
     function FloortoCampusTop(event){
       var i = event.target.eventParam;
       var j = event.target.eventParam2;
-      MapChange(BuildingFloorContainers[i][j],InsideTopContainer);
+      //MapChange(BuildingFloorContainers[i][j],InsideTopContainer);
+      MapChangeAnimation_Slide(BuildingFloorContainers[i][j],InsideTopContainer,"left");      
     }
     // 上の階へ -------------------------------------------------------------------------
     function FloortoUpperFloor(event){
       var i = event.target.eventParam;
       var j = event.target.eventParam2;
       if(bf_toUpper[i][j]==-1)return;
-      MapChange(BuildingFloorContainers[i][j],BuildingFloorContainers[i][j+1]);
+      // MapChange(BuildingFloorContainers[i][j],BuildingFloorContainers[i][j+1]);
+      MapChangeAnimation_Slide(BuildingFloorContainers[i][j],BuildingFloorContainers[i][j+1],"top");
     }
     // 下の階へ -------------------------------------------------------------------------
     function FloortoLowerFloor(event){
       var i = event.target.eventParam;
       var j = event.target.eventParam2;
       if(bf_toLower[i][j]==-1)return;
-      MapChange(BuildingFloorContainers[i][j],BuildingFloorContainers[i][j-1]);
-    }
-    // 現在のページから次のページに切り替わる -------------------------------------------
-    function MapChange(CurrentContainer,NextContainer){
-      DisplayContainer.removeChild(CurrentContainer);
-      DisplayContainer.addChild(NextContainer);
+      //MapChange(BuildingFloorContainers[i][j],BuildingFloorContainers[i][j-1]);
+      MapChangeAnimation_Slide(BuildingFloorContainers[i][j],BuildingFloorContainers[i][j-1],"bottom");
     }
     // DOMに情報を書き込む（構外）-------------------------------------------------------
     function OutsideWriteInfo(event){
@@ -629,7 +629,119 @@ function init(event){
       h_shopname.textContent = i+"棟"+j+"階の"+k+"番目のピン";
     }
     // ここまでイベントに対する処理の関数群 ---------------------------------------------------------------------------
-  }// ここまでmain ----------------------------------------------------------------------------------------------------
+
+    // ページ切り替えについての関数群 ---------------------------------------------------------------------------------
+    // 現在のページから次のページに切り替わる -------------------------------------------
+    function MapChange(CurrentContainer,NextContainer){
+      DisplayContainer.removeChild(CurrentContainer);
+      DisplayContainer.addChild(NextContainer);
+    }
+    // 現在のページから次のページに切り替わる （スライドアニメーション）-----------------
+    /*
+    direction : top    : 上の階に行くときに使う。
+    direction : bellow : 下の階へ行くときに使う。
+    direction : left   : 構外マップへ行くとき
+    direction : right  : 構内マップへ行くとき
+    */
+    function MapChangeAnimation_Slide(CurrentContainer,NextContainer,direction){
+      var TimeLine = new createjs.Timeline(); // タイムライン
+      var changetime = 600; // アニメーションにかかる時間（ms)
+      // direction : 方向別に処理を分ける
+      switch(direction){
+        case "top":
+          // 現在のページの処理
+          TimeLine.addTween(
+            // changetime[ms]で下方向に移動させる
+            createjs.Tween.get(CurrentContainer,{override:false},changetime)
+              .to({y:canvasElement.height},changetime,createjs.Ease.cubicInOut)
+              .call(function(){
+                // アニメーション終了時に現在表示していたマップの座標を0に戻し、消す
+                CurrentContainer.y=0;
+                DisplayContainer.removeChild(CurrentContainer);
+              })
+          );
+          // 次のページの処理
+          // 初期化
+          NextContainer.y = -1 * canvasElement.height;
+          DisplayContainer.addChild(NextContainer);
+          TimeLine.addTween(
+            createjs.Tween.get(NextContainer,{override:false})
+              // changetime[ms]で下方向に移動させる
+              .to({y:0},changetime,createjs.Ease.cubicInOut)
+          );
+          break;
+        case "bottom":
+          // 現在のページの処理
+          TimeLine.addTween(
+            // changetime[ms]で上方向に移動させる
+            createjs.Tween.get(CurrentContainer,{override:false},changetime)
+              .to({y:-1*canvasElement.height},changetime,createjs.Ease.cubicInOut)
+              .call(function(){
+                // アニメーション終了時に現在表示していたマップの座標を0に戻し、消す
+                CurrentContainer.y=0;
+                DisplayContainer.removeChild(CurrentContainer);
+              })
+          );
+          // 次のページの処理
+          // 初期化
+          NextContainer.y = canvasElement.height;
+          DisplayContainer.addChild(NextContainer);
+          TimeLine.addTween(
+            createjs.Tween.get(NextContainer,{override:false})
+              // changetime[ms]で上方向に移動させる
+              .to({y:0},changetime,createjs.Ease.cubicInOut)
+          );
+          break;
+        case "right":
+          // 現在のページの処理
+          TimeLine.addTween(
+            // changetime[ms]で左方向に移動させる
+            createjs.Tween.get(CurrentContainer,{override:false},changetime)
+              .to({x:-1*canvasElement.width},changetime,createjs.Ease.cubicInOut)
+              .call(function(){
+                // アニメーション終了時に現在表示していたマップの座標を0に戻し、消す
+                CurrentContainer.x=0;
+                DisplayContainer.removeChild(CurrentContainer);
+              })
+          );
+          // 次のページの処理
+          // 初期化
+          NextContainer.x = canvasElement.width;
+          DisplayContainer.addChild(NextContainer);
+          TimeLine.addTween(
+            createjs.Tween.get(NextContainer,{override:false})
+              // changetime[ms]で左方向に移動させる
+              .to({x:0},changetime,createjs.Ease.cubicInOut)
+          );
+          break;
+        case "left":
+          // 現在のページの処理
+          TimeLine.addTween(
+            // changetime[ms]で右方向に移動させる
+            createjs.Tween.get(CurrentContainer,{override:false},changetime)
+              .to({x:canvasElement.width},changetime,createjs.Ease.cubicInOut)
+              .call(function(){
+                // アニメーション終了時に現在表示していたマップの座標を0に戻し、消す
+                CurrentContainer.x=0;
+                DisplayContainer.removeChild(CurrentContainer);
+              })
+          );
+          // 次のページの処理
+          // 初期化
+          NextContainer.x = -1 * canvasElement.width;
+          DisplayContainer.addChild(NextContainer);
+          TimeLine.addTween(
+            createjs.Tween.get(NextContainer,{override:false})
+              // changetime[ms]で右方向に移動させる
+              .to({x:0},changetime,createjs.Ease.cubicInOut)
+          );
+          break;
+      }
+      TimeLine.gotoAndPlay("start");
+    }
+    // ここまでMAP切り替えの関数群 ------------------------------------------------------------------------------------
+  }
+  // ここまでmain ----------------------------------------------------------------------------------------------------
   // リサイズ時の処理 -------------------------------------------------------------------
   window.addEventListener('resize' , function(){
     (!window.requestAnimationFrame) ? this.setTimeout(Sizing) : window,requestAnimationFrame(Sizing);

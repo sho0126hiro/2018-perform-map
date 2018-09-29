@@ -1,6 +1,6 @@
 {
-    "ToCampusArrow":"goGeneral.png",
-    "ToOutsideArrow":"map-arrow-toout.png",
+    "ToCampusArrow":"map-tool-toInside.png",
+    "ToOutsideArrow":"map-tool-toOutside.png",
     "Generalview": "map.png",
     "AreaRects":[
         {"x":1050,"y":300,"width":500,"height":250,"color":"DarkRed"},
@@ -10,8 +10,8 @@
         {"x":2450,"y":1150,"width":350,"height":230,"color":"Green"},
         {"x":2250,"y":850,"width":230,"height":200,"color":"Blue"}
     ],
-    "PinImg_1":"pin_1.png",
-    "GotoGeneralImg":"goGeneral.png",
+    "PinImg_1":"map-pin_1.png",
+    "GotoGeneralImg":"map-tool-goGeneral.png",
     "OutsideAreas":[
         {
             "area":"A",
@@ -86,7 +86,11 @@
     ],
     "Campus":{
         "top":"map-inside.png",
-        "goTopArrow":"goGeneral.png",
+        "goTopArrow":"map-tool-toInsideTop.png",
+        "goUpperFloorImg":"map-tool-toUpper.png",
+        "goLowerFloorImg":"map-tool-toLower.png",
+        "goUpperFloorImg_8":"map-tool-toUpper-8.png",
+        "goLowerFloorImg_8":"map-tool-toLower-8.png",
         "buildingRects":[
             {"x":1200,"y":1100,"width":1440,"height":280,"color":"DarkRed"},
             {"x":1200,"y":560,"width":1440,"height":280,"color":"DarkRed"},
@@ -125,6 +129,16 @@
                     "map-inside-2-3.png",
                     "map-inside-2-4.png"
                 ],
+                "goUpper":[
+                    {"floor":0,"x":2300,"y":-10},
+                    {"floor":1,"x":2300,"y":-10},
+                    {"floor":2,"x":2300,"y":-10}
+                ],
+                "goLower":[
+                    {"floor":1,"x":2300,"y":1250},
+                    {"floor":2,"x":2300,"y":1250},
+                    {"floor":3,"x":2300,"y":1250}
+                ],
                 "pins":[
                     [
                         {"x":1900,"y":700},
@@ -147,6 +161,7 @@
                         {"x":3280,"y":700}
                     ],
                     [
+                        {"x":1450,"y":700},
                         {"x":1900,"y":700},
                         {"x":2360,"y":700},
                         {"x":2820,"y":700},
@@ -154,19 +169,29 @@
                     ]
                 ],
                 "goTop":[
-                    {"x":3000,"y":210},
-                    {"x":3000,"y":210},
-                    {"x":3000,"y":210},
-                    {"x":3000,"y":210}
+                    {"x":-10,"y":-30},
+                    {"x":-10,"y":-30},
+                    {"x":-10,"y":-30},
+                    {"x":-10,"y":-30}
                 ]
             },
             {
                 "buildNum":3,
                 "floorImg":[
-                    "map-inside-2-1.png",
-                    "map-inside-2-1.png",
-                    "map-inside-2-1.png",
-                    "map-inside-2-1.png"
+                    "neko.jpg",
+                    "neko.jpg",
+                    "neko.jpg",
+                    "neko.jpg"
+                ],
+                "goUpper":[
+                    {"floor":0,"x":2300,"y":-10},
+                    {"floor":1,"x":2300,"y":-10},
+                    {"floor":2,"x":2300,"y":-10}
+                ],
+                "goLower":[
+                    {"floor":1,"x":2300,"y":1250},
+                    {"floor":2,"x":2300,"y":1250},
+                    {"floor":3,"x":2300,"y":1250}
                 ],
                 "pins":[
                     [
@@ -187,17 +212,23 @@
                     ]
                 ],
                 "goTop":[
-                    {"x":3000,"y":210},
-                    {"x":3000,"y":210},
-                    {"x":3000,"y":210},
-                    {"x":3000,"y":210}
+                    {"x":-10,"y":-30},
+                    {"x":-10,"y":-30},
+                    {"x":-10,"y":-30},
+                    {"x":-10,"y":-30}
                 ]
             },
             {
                 "buildNum":5,
                 "floorImg":[
                     "neko.jpg",
-                    "map-inside-2-1.png"
+                    "neko.jpg"
+                ],
+                "goUpper":[
+                    {"floor":0,"x":2300,"y":-10}
+                ],
+                "goLower":[
+                    {"floor":1,"x":2300,"y":1250}
                 ],
                 "pins":[
                     [
@@ -210,15 +241,21 @@
                     ]
                 ],
                 "goTop":[
-                    {"x":3000,"y":210},
-                    {"x":3000,"y":210}
+                    {"x":-10,"y":-30},
+                    {"x":-10,"y":-30}
                 ]
             },
             {
                 "buildNum":8,
                 "floorImg":[
-                    "map-inside-2-1.png",
-                    "map-inside-2-1.png"
+                    "neko.jpg",
+                    "neko.jpg"
+                ],
+                "goUpper":[
+                    {"floor":0,"x":2300,"y":-10}
+                ],
+                "goLower":[
+                    {"floor":1,"x":2300,"y":1250}
                 ],
                 "pins":[
                     [
@@ -231,8 +268,8 @@
                     ]
                 ],
                 "goTop":[
-                    {"x":3000,"y":210},
-                    {"x":3000,"y":210}
+                    {"x":-10,"y":-30},
+                    {"x":-10,"y":-30}
                 ]
             }
         ]
