@@ -13,7 +13,6 @@ d_-- : デバッグ用
 // *z : 後から座標指定しなきゃダメなところ
 // ** comment  後から実装するべきところ
 // *p : pathが配置されていること
-Comment
 */
 
 window.addEventListener("load",Load);
