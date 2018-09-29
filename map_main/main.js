@@ -307,6 +307,8 @@ function init(event){
     var bf_pins                 = []; // 構内の全てのピン格納用　bf_pins[棟][階][ピン番号]
     var bf_toUpper              = []; // 上の階へ [棟][階]
     var bf_toLower              = []; // 下の階へ [棟][階]
+    var bf_toDisplayPins        = []; // ピンを表示する[棟][階]
+    var bf_toHidePins           = []; // ピンを非表示にする[棟][階]
     /*
     棟・階は０から始まり、2.3.5.8棟しかフロアを表示しないため、プログラム上でのi棟j階は実際の値とは違う。
     その辺はJSONでも全て共通させている。イベントの検知～イベントに対応する処理で実際の階に結び付ける。
@@ -337,6 +339,8 @@ function init(event){
       bf_toCampusTops[i]  = []; // i棟の中にある全体への画像が格納される（後に.push）
       bf_toUpper[i]       = []; // 上の階へ [i棟][階]
       bf_toLower[i]       = []; // 下の階へ [i棟][階]
+      bf_toDisplayPins[i] = []; // ピンを表示する[棟][階]
+      bf_toHidePins[i]    = []; // ピンを非表示にする[棟][階]
       var b_pins          = []; // 建物におけるピン画像が入る
       for(var j=0;j<j_mapImgsData.Campus.buildings[i].floorImg.length;j++){
         var FloorContainer = new createjs.Container(); // j階のオブジェクトが全て格納される
@@ -441,6 +445,26 @@ function init(event){
         f_toCampusTop.y      = j_mapImgsData.Campus.buildings[i].goTop[j].y * gm_general.scaleY;
         FloorContainer.addChild(f_toCampusTop);
         bf_toCampusTops[i].push(f_toCampusTop);
+        
+        // ---- 4.2.10 「ピンを表示する画像」の設置 -----------------------------------------------
+        var f_toDisplayPin = new createjs.Bitmap("./imgs/" + j_mapImgsData.ToDisplayPinImg); // *p
+        f_toDisplayPin.scaleX = gm_general.scaleX;
+        f_toDisplayPin.scaleY = gm_general.scaleY;
+        f_toDisplayPin.x      = j_mapImgsData.Campus.buildings[i].toDisplayPins[j].x * gm_general.scaleX;
+        f_toDisplayPin.y      = j_mapImgsData.Campus.buildings[i].toDisplayPins[j].y * gm_general.scaleY;
+        f_toDisplayPin.alpha  = 0;
+        FloorContainer.addChild(f_toDisplayPin);
+        bf_toDisplayPins[i].push(f_toDisplayPin);
+        // ---- 4.2.11 「ピンを非表示にする画像」の設置 -------------------------------------------
+        var f_toHidePin = new createjs.Bitmap("./imgs/" + j_mapImgsData.ToHidePinImg); // *p
+        f_toHidePin.scaleX = gm_general.scaleX;
+        f_toHidePin.scaleY = gm_general.scaleY;
+        f_toHidePin.x      = j_mapImgsData.Campus.buildings[i].toHidePins[j].x * gm_general.scaleX;
+        f_toHidePin.y      = j_mapImgsData.Campus.buildings[i].toHidePins[j].y * gm_general.scaleY;
+        f_toHidePin.alpha  = 1;
+        FloorContainer.addChild(f_toHidePin);
+        bf_toHidePins[i].push(f_toHidePin);
+        // このページのデータを格納
         FloorContainers.push(FloorContainer);
       }
       bf_pins.push(b_pins);
@@ -479,10 +503,10 @@ function init(event){
           outSidePins_r[i][j].eventParam2 = j;
         }
         // 12. ピンを表示するボタンに対する処理
-        a_toDisplayPins[i].addEventListener("click",OutsideDisplayPins);
+        a_toDisplayPins[i].addEventListener("click",DisplayPins);
         a_toDisplayPins[i].eventParam = i;
         // 13. ピンを非表示にするボタンに対する処理
-        a_toHidePins[i].addEventListener("click",OutsideHidePins);
+        a_toHidePins[i].addEventListener("click",HidePins);
         a_toHidePins[i].eventParam = i;
       }
       // 6. 構内の棟を示す四角に対する処理 >> 吹き出しの出現
@@ -516,6 +540,14 @@ function init(event){
             bf_pins[i][j][k].eventParam2 = j;
             bf_pins[i][j][k].eventParam3 = k;
           }
+          // 14. ピンを表示するボタンに対する処理
+          bf_toDisplayPins[i][j].addEventListener("click",DisplayPins);
+          bf_toDisplayPins[i][j].eventParam  = i;
+          bf_toDisplayPins[i][j].eventParam2 = j;
+          // 15. ピンを表示するボタンに対する処理
+          bf_toHidePins[i][j].addEventListener("click",HidePins);
+          bf_toHidePins[i][j].eventParam  = i;
+          bf_toHidePins[i][j].eventParam2 = j;
         }
       }
       // 10. 上の階へのボタンに対する処理
@@ -537,7 +569,7 @@ function init(event){
             bf_toLower[i][j].eventParam2 = j;
           }
         }
-      }
+      } 
     }//ここまでEventListener
     // :: イベントに対する処理　関数群 --------------------------------------------------------------------------------
     // 全体画面から各エリアへ飛ぶ -------------------------------------------------------
@@ -646,26 +678,52 @@ function init(event){
       MapChangeAnimation_Slide(BuildingFloorContainers[i][j],BuildingFloorContainers[i][j-1],"bottom");
     }
     // ピンを表示 -----------------------------------------------------------------------
-    function OutsideDisplayPins(event){
-      var i = event.target.eventParam;
+    function DisplayPins(event){
+      //var i = event.target.eventParam;
       console.log("hyouzisuruyo");
-      for(var j=0;j<a_pinContainers[i].children.length/2;j++){
-        a_pinContainers[i].children[2*j].alpha = 1;
-        a_pinContainers[i].children[2*j + 1].visible = true;
+      for(var i=0;i<a_pinContainers.length;i++){
+        for(var j=0;j<a_pinContainers[i].children.length/2;j++){
+          a_pinContainers[i].children[2*j].alpha = 1;
+          a_pinContainers[i].children[2*j + 1].visible = true;
+        }
+        a_toDisplayPins[i].alpha = 0;
+        a_toHidePins[i].alpha = 1;
       }
-      a_toDisplayPins[i].alpha = 0;
-      a_toHidePins[i].alpha = 1;
+      for(var i=0;i<bf_toDisplayPins.length;i++){
+        for(var j=0;j<bf_toDisplayPins[i].length;j++){
+          // f_PinContainersにアクセスする
+          for(var k=0;k<BuildingFloorContainers[i][j].children[1].children.length/2;k++){
+            BuildingFloorContainers[i][j].children[1].children[2*k].alpha   = 1;
+            BuildingFloorContainers[i][j].children[1].children[2*k+1].visible = true;
+          }
+          bf_toDisplayPins[i][j].alpha = 0;
+          bf_toHidePins[i][j].alpha = 1;
+        }
+      }
     }
     // ピンを非表示 ---------------------------------------------------------------------
-    function OutsideHidePins(event){
-      var i = event.target.eventParam;
+    function HidePins(event){
+      //var i = event.target.eventParam;
       console.log("hihyouzinisuruyo");
-      for(var j=0;j<a_pinContainers[i].children.length/2;j++){
-        a_pinContainers[i].children[2*j].alpha = 0;
-        a_pinContainers[i].children[2*j + 1].visible = false;
+      for(var i=0;i<a_pinContainers.length;i++){
+        for(var j=0;j<a_pinContainers[i].children.length/2;j++){
+          a_pinContainers[i].children[2*j].alpha = 0;
+          a_pinContainers[i].children[2*j + 1].visible = false;
+        }
+        a_toDisplayPins[i].alpha = 1;
+        a_toHidePins[i].alpha = 0;
       }
-      a_toDisplayPins[i].alpha = 1;
-      a_toHidePins[i].alpha = 0;
+      for(var i=0;i<bf_toDisplayPins.length;i++){
+        for(var j=0;j<bf_toDisplayPins[i].length;j++){
+          // f_PinContainersにアクセスする
+          for(var k=0;k<BuildingFloorContainers[i][j].children[1].children.length/2;k++){
+            BuildingFloorContainers[i][j].children[1].children[2*k].alpha   = 0;
+            BuildingFloorContainers[i][j].children[1].children[2*k+1].visible = false;
+          }
+          bf_toDisplayPins[i][j].alpha = 1;
+          bf_toHidePins[i][j].alpha = 0;
+        }
+      }
     }
     // DOMに情報を書き込む（構外）-------------------------------------------------------
     function OutsideWriteInfo(event){
