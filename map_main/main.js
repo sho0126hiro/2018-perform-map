@@ -590,7 +590,8 @@ function init(event){
           e_balloons[k] = 0;
         }
       }
-      MapChange(InsideTopContainer,BuildingFloorContainers[buildingIndex[i]][j]);
+      //MapChange(InsideTopContainer,BuildingFloorContainers[buildingIndex[i]][j]);
+      MapChangeAnimation_Fade(InsideTopContainer,BuildingFloorContainers[buildingIndex[i]][j])
     }
     // フロアから構内のトップへ ---------------------------------------------------------
     function FloortoCampusTop(event){
@@ -636,15 +637,40 @@ function init(event){
       DisplayContainer.removeChild(CurrentContainer);
       DisplayContainer.addChild(NextContainer);
     }
+    // 現在のページから次のページに切り替わる （フェードアニメーション）-----------------
+    function MapChangeAnimation_Fade(CurrentContainer,NextContainer){
+      var TimeLine   = new createjs.Timeline(); // タイムライン
+      var changetime = 600; // アニメーションにかかる時間（ms)
+      // 現在のページの処理
+      TimeLine.addTween(
+        // changetime[ms]をかけて現在のページの透明度を０にする
+        createjs.Tween.get(CurrentContainer,{override:false})
+          .to({alpha:0},changetime)
+          .call(function(){
+            // アニメーションが終了したら現在のページを消す(透明度を元に戻しておく)
+            CurrentContainer.alpha = 1;
+            DisplayContainer.removeChild(CurrentContainer);
+          })
+      );
+      // 次のページの処理
+      NextContainer.alpha = 0;
+      DisplayContainer.addChild(NextContainer);
+      TimeLine.addTween(
+        // changetime[ms]をかけて現在の透明度を１にする
+        createjs.Tween.get(NextContainer,{oevrride:true})
+          .to({alpha:1},changetime)
+      )
+      TimeLine.gotoAndPlay("start");
+    }
     // 現在のページから次のページに切り替わる （スライドアニメーション）-----------------
-    /*
-    direction : top    : 上の階に行くときに使う。
-    direction : bellow : 下の階へ行くときに使う。
-    direction : left   : 構外マップへ行くとき
-    direction : right  : 構内マップへ行くとき
-    */
     function MapChangeAnimation_Slide(CurrentContainer,NextContainer,direction){
-      var TimeLine = new createjs.Timeline(); // タイムライン
+      /*
+      direction : top    : 上の階に行くときに使う。
+      direction : bottom : 下の階へ行くときに使う。
+      direction : left   : 構外マップへ行くとき
+      direction : right  : 構内マップへ行くとき
+      */
+      var TimeLine   = new createjs.Timeline(); // タイムライン
       var changetime = 600; // アニメーションにかかる時間（ms)
       // direction : 方向別に処理を分ける
       switch(direction){
