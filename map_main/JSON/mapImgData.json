@@ -10,6 +10,8 @@
         {"x":2450,"y":1150,"width":350,"height":230,"color":"Green"},
         {"x":2250,"y":850,"width":230,"height":200,"color":"Blue"}
     ],
+    "ToDisplayPinImg":"samplebutton.png",
+    "ToHidePinImg":"neko.jpg",
     "PinImg_1":"map-pin_1.png",
     "GotoGeneralImg":"map-tool-goGeneral.png",
     "OutsideAreas":[
@@ -23,7 +25,9 @@
                 {"x":2200,"y":400},
                 {"x":3130,"y":750}
             ],
-            "goGeneral":{"x":3000,"y":210}
+            "goGeneral":{"x":3000,"y":210},
+            "toDisplayPins":{"x":3000,"y":1450},
+            "toHidePins":{"x":3000,"y":1450}
         },
         {
             "area":"B",
@@ -34,7 +38,9 @@
                 {"x":1820,"y":80},
                 {"x":2220,"y":80}
             ],
-            "goGeneral":{"x":3000,"y":1450}
+            "goGeneral":{"x":3000,"y":1450},
+            "toDisplayPins":{"x":3000,"y":1450},
+            "toHidePins":{"x":3000,"y":1450}
         },
         {
             "area":"C",
@@ -43,7 +49,9 @@
                 {"x":2100,"y":1300},
                 {"x":2100,"y":1600}
             ],
-            "goGeneral":{"x":3000,"y":1450}
+            "goGeneral":{"x":3000,"y":1450},
+            "toDisplayPins":{"x":3000,"y":1450},
+            "toHidePins":{"x":3000,"y":1450}
         },
         {
             "area":"D",
@@ -58,7 +66,9 @@
                 {"x":2985,"y":950},
                 {"x":2985,"y":1250}
             ],
-            "goGeneral":{"x":900,"y":1380}
+            "goGeneral":{"x":900,"y":1380},
+            "toDisplayPins":{"x":3000,"y":1450},
+            "toHidePins":{"x":3000,"y":1450}
         },
         {
             "area":"E",
@@ -71,7 +81,9 @@
                 {"x":2780,"y":450},
                 {"x":3110,"y":450}
             ],
-            "goGeneral":{"x":2800,"y":1450}
+            "goGeneral":{"x":2800,"y":1450},
+            "toDisplayPins":{"x":3000,"y":1450},
+            "toHidePins":{"x":3000,"y":1450}
         },
         {
             "area":"F",
@@ -81,7 +93,9 @@
                 {"x":2080,"y":1100},
                 {"x":1640,"y":1100}  
             ],
-            "goGeneral":{"x":2800,"y":1450}
+            "goGeneral":{"x":2800,"y":1450},
+            "toDisplayPins":{"x":3000,"y":1450},
+            "toHidePins":{"x":3000,"y":1450}
         }
     ],
     "Campus":{

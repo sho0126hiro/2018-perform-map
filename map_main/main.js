@@ -139,7 +139,10 @@ function init(event){
     var am_sizes           = [];                         // エリアごとに分けたときの画像のサイズ
     var am_imgs            = [];                         // エリアごとに分けたときの画像
     var a_toGenerals       = [];                         // エリアから全体に戻るときの画像
-    var outSidePins_r      = [];                         //校外のピンたち（outSidePins_r[Area][num]) 本当はその上に隠れている四角
+    var outSidePins_r      = [];                         // 校外のピンたちの上に隠れている四角（outSidePins_r[Area][num]) 
+    var a_pinContainers    = [];                         // エリアごとのピン（画像）が格納されたコンテナが格納 [エリア][番号]
+    var a_toDisplayPins      = [];
+    var a_toHidePins         = [];
     // --- 2.1 各エリアの拡大画像の大きさの取得---------------------------------------------------
     for(var i=0;i<j_mapImgsData.OutsideAreas.length;i++){
       var am_img      = new createjs.Bitmap("./imgs/" + j_mapImgsData.OutsideAreas[i].img); // *p
@@ -193,14 +196,34 @@ function init(event){
       }
       outSidePins_r.push(a_pins);
       a_PageContainer.addChild(a_PinContainer);
+      a_pinContainers.push(a_PinContainer);
       // ---- 2.2.3 各エリアに配置される「Generalへ戻る画像」の設置 -------------------------------
       var a_toGeneral = new createjs.Bitmap("./imgs/" + j_mapImgsData.GotoGeneralImg); // *p
       a_toGeneral.scaleX = gm_general.scaleX;
       a_toGeneral.scaleY = gm_general.scaleY;
-      a_toGeneral.x = j_mapImgsData.OutsideAreas[i].goGeneral.x * gm_general.scaleX;
-      a_toGeneral.y = j_mapImgsData.OutsideAreas[i].goGeneral.y * gm_general.scaleY;
+      a_toGeneral.x      = j_mapImgsData.OutsideAreas[i].goGeneral.x * gm_general.scaleX;
+      a_toGeneral.y      = j_mapImgsData.OutsideAreas[i].goGeneral.y * gm_general.scaleY;
       a_PageContainer.addChild(a_toGeneral);
       a_toGenerals.push(a_toGeneral);
+      // ---- 2.2.4 各エリアに配置される「ピンを表示する画像」の設置 ------------------------------
+      var a_toDisplayPin = new createjs.Bitmap("./imgs/" + j_mapImgsData.ToDisplayPinImg); // *p
+      a_toDisplayPin.scaleX = gm_general.scaleX;
+      a_toDisplayPin.scaleY = gm_general.scaleY;
+      a_toDisplayPin.x      = j_mapImgsData.OutsideAreas[i].toDisplayPins.x * gm_general.scaleX;
+      a_toDisplayPin.y      = j_mapImgsData.OutsideAreas[i].toDisplayPins.y * gm_general.scaleY;
+      a_toDisplayPin.alpha  = 0;
+      a_PageContainer.addChild(a_toDisplayPin);
+      a_toDisplayPins.push(a_toDisplayPin);
+      // ---- 2.2.5 各エリアに配置される「ピンを非表示にする画像」の設置 --------------------------
+      var a_toHidePin = new createjs.Bitmap("./imgs/" + j_mapImgsData.ToHidePinImg); // *p
+      a_toHidePin.scaleX = gm_general.scaleX;
+      a_toHidePin.scaleY = gm_general.scaleY;
+      a_toHidePin.x      = j_mapImgsData.OutsideAreas[i].toHidePins.x * gm_general.scaleX;
+      a_toHidePin.y      = j_mapImgsData.OutsideAreas[i].toHidePins.y * gm_general.scaleY;
+      a_toHidePin.alpha = 1;
+      a_PageContainer.addChild(a_toHidePin);
+      a_toHidePins.push(a_toHidePin);
+      // このページのデータを格納
       areaContainers.push(a_PageContainer);
     }
 
@@ -455,6 +478,12 @@ function init(event){
           outSidePins_r[i][j].eventParam  = i;
           outSidePins_r[i][j].eventParam2 = j;
         }
+        // 12. ピンを表示するボタンに対する処理
+        a_toDisplayPins[i].addEventListener("click",OutsideDisplayPins);
+        a_toDisplayPins[i].eventParam = i;
+        // 13. ピンを非表示にするボタンに対する処理
+        a_toHidePins[i].addEventListener("click",OutsideHidePins);
+        a_toHidePins[i].eventParam = i;
       }
       // 6. 構内の棟を示す四角に対する処理 >> 吹き出しの出現
       for(var i=0;i<c_rects.length;i++){
@@ -615,6 +644,28 @@ function init(event){
       if(bf_toLower[i][j]==-1)return;
       //MapChange(BuildingFloorContainers[i][j],BuildingFloorContainers[i][j-1]);
       MapChangeAnimation_Slide(BuildingFloorContainers[i][j],BuildingFloorContainers[i][j-1],"bottom");
+    }
+    // ピンを表示 -----------------------------------------------------------------------
+    function OutsideDisplayPins(event){
+      var i = event.target.eventParam;
+      console.log("hyouzisuruyo");
+      for(var j=0;j<a_pinContainers[i].children.length/2;j++){
+        a_pinContainers[i].children[2*j].alpha = 1;
+        a_pinContainers[i].children[2*j + 1].visible = true;
+      }
+      a_toDisplayPins[i].alpha = 0;
+      a_toHidePins[i].alpha = 1;
+    }
+    // ピンを非表示 ---------------------------------------------------------------------
+    function OutsideHidePins(event){
+      var i = event.target.eventParam;
+      console.log("hihyouzinisuruyo");
+      for(var j=0;j<a_pinContainers[i].children.length/2;j++){
+        a_pinContainers[i].children[2*j].alpha = 0;
+        a_pinContainers[i].children[2*j + 1].visible = false;
+      }
+      a_toDisplayPins[i].alpha = 1;
+      a_toHidePins[i].alpha = 0;
     }
     // DOMに情報を書き込む（構外）-------------------------------------------------------
     function OutsideWriteInfo(event){
