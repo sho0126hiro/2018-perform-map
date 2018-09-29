@@ -55,7 +55,7 @@ function init(event){
   stage.addChild(DisplayContainer);
   DisplayContainer.cache(0,0,canvasElement.width,canvasElement.height);
   stage.setClearColor('#FFFFFF');
-  var gm_general      = new createjs.Bitmap("./imgs/" + j_mapImgsData.Generalview); // 構外MAP全体画像　すべての基準はこの画像になる。
+  var gm_general      = new createjs.Bitmap("./imgs/" + j_mapImgsData.Generalview); // 構外MAP全体画像　すべての基準はこの画像になる。// *p
   main();
 
   // -- 画像の読み込み >> 画像のサイズを返す------------------------
@@ -142,7 +142,7 @@ function init(event){
     var outSidePins_r      = [];                         //校外のピンたち（outSidePins_r[Area][num]) 本当はその上に隠れている四角
     // --- 2.1 各エリアの拡大画像の大きさの取得---------------------------------------------------
     for(var i=0;i<j_mapImgsData.OutsideAreas.length;i++){
-      var am_img      = new createjs.Bitmap("./imgs/" + j_mapImgsData.OutsideAreas[i].img);
+      var am_img      = new createjs.Bitmap("./imgs/" + j_mapImgsData.OutsideAreas[i].img); // *p
       am_sizes_tmp[i] = getImageSize(am_img);
     }
     // await時間短縮
@@ -171,11 +171,11 @@ function init(event){
       a_PageContainer.addChild(am_img);
       // ---- 2.2.2 各エリアに配置されるピンの設置 ------------------------------------------------
       var a_pins         = []; //　エリアにおけるピンの画像が入る [エリア]
-      var a_pin1Tmp      = new createjs.Bitmap("./imgs/"+j_mapImgsData.PinImg_1);
+      var a_pin1Tmp      = new createjs.Bitmap("./imgs/"+j_mapImgsData.PinImg_1); // *p
       var pin1Size       = await getImageSize(a_pin1Tmp); // pinの画像サイズを取得
       for(var j=0;j<j_mapImgsData.OutsideAreas[i].pins.length;j++){
         // ----- 2.2.2.1 エリアにおけるピンの画像の設置 -------------------------------------------
-        var a_pin        = new createjs.Bitmap("./imgs/"+j_mapImgsData.PinImg_1);
+        var a_pin        = new createjs.Bitmap("./imgs/"+j_mapImgsData.PinImg_1); // *p
         a_pin.scaleX     = gm_general.scaleX;
         a_pin.scaleY     = gm_general.scaleY;
         a_pin.x          = j_mapImgsData.OutsideAreas[i].pins[j].x * gm_general.scaleX;
@@ -194,7 +194,7 @@ function init(event){
       outSidePins_r.push(a_pins);
       a_PageContainer.addChild(a_PinContainer);
       // ---- 2.2.3 各エリアに配置される「Generalへ戻る画像」の設置 -------------------------------
-      var a_toGeneral = new createjs.Bitmap("./imgs/" + j_mapImgsData.GotoGeneralImg);
+      var a_toGeneral = new createjs.Bitmap("./imgs/" + j_mapImgsData.GotoGeneralImg); // *p
       a_toGeneral.scaleX = gm_general.scaleX;
       a_toGeneral.scaleY = gm_general.scaleY;
       a_toGeneral.x = j_mapImgsData.OutsideAreas[i].goGeneral.x * gm_general.scaleX;
@@ -206,7 +206,7 @@ function init(event){
 
     // --- 3. 構内マップの配置 ----------------------------------------------------------------------------------------
     var InsideTopContainer = new createjs.Container();   // 構内マップで表示されるオブジェクトが格納されている。
-    var cm_img             = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.top);
+    var cm_img             = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.top); // *p
     // --- 3.1 構内マップTOPの画像サイズの取得 ----------------------------------------------------
     var cm_size = await getImageSize(cm_img);
     var c_rects = []; // 構内から棟に
@@ -253,7 +253,7 @@ function init(event){
       var j_balloon        = j_mapImgsData.Campus.balloons[i];
       var j_balloonRect    = j_mapImgsData.Campus.balloonRects[i]; 
       // ---- 3.4.1 吹き出し画像の設置 ------------------------------------------------------------
-      var c_balloon        = new createjs.Bitmap("./imgs/" + j_balloon.img); // 吹き出し画像
+      var c_balloon        = new createjs.Bitmap("./imgs/" + j_balloon.img); // 吹き出し画像 // *p
       var c_balloonRects   = [];                                             // i番目吹き出しに載せられる四角たちが格納されている。
       c_balloon.scaleX     = gm_general.scaleX * 0.26; // *z スケール調整
       c_balloon.scaleY     = gm_general.scaleY *0.26; // *z
@@ -297,7 +297,7 @@ function init(event){
     for(var i=0;i<j_mapImgsData.Campus.buildings.length;i++){
       bfm_sizes_tmp[i] = []; // 2次元配列化
       for(var j=0;j<j_mapImgsData.Campus.buildings[i].floorImg.length;j++){
-        var fm_img = new createjs.Bitmap("./imgs/"+ j_mapImgsData.Campus.buildings[i].floorImg[j]);
+        var fm_img = new createjs.Bitmap("./imgs/"+ j_mapImgsData.Campus.buildings[i].floorImg[j]); // *p
         bfm_sizes_tmp[i][j] = getImageSize(fm_img);
       }
     }
@@ -318,7 +318,7 @@ function init(event){
       for(var j=0;j<j_mapImgsData.Campus.buildings[i].floorImg.length;j++){
         var FloorContainer = new createjs.Container(); // j階のオブジェクトが全て格納される
         // ---- 4.2.1 各フロアの拡大画像の配置 ----------------------------------------------------
-        var fm_img         = new createjs.Bitmap("./imgs/"+ j_mapImgsData.Campus.buildings[i].floorImg[j]);
+        var fm_img         = new createjs.Bitmap("./imgs/"+ j_mapImgsData.Campus.buildings[i].floorImg[j]); // *p
         var fm_size        = bfm_sizes[i][j];
         // ---- 4.2.2 canvasのサイズに各フロア画像を合わせる。-------------------------------------
         if((canvasElement.width/fm_size[0]) * fm_size[1] > canvasElement.height){
@@ -337,11 +337,11 @@ function init(event){
         var f_pins         = [];                       // i棟j階におけるピン画像が全て格納される 
         var f_PinContainer = new createjs.Container(); // i棟j階におけるピン画像が全て格納されたコンテナ
         // ---- 4.2.4 ピン画像・サイズの取得 ------------------------------------------------------
-        var f_pin1Tmp = new createjs.Bitmap("./imgs/"+j_mapImgsData.PinImg_1);
+        var f_pin1Tmp = new createjs.Bitmap("./imgs/"+j_mapImgsData.PinImg_1); // *p
         var f_pin1Size = await getImageSize(f_pin1Tmp); // pinの画像サイズを取得
         for(var k=0;k<j_mapImgsData.Campus.buildings[i].pins[j].length;k++){
           // ---- 4.2.5 ピン画像を設置 ------------------------------------------------------------
-          var f_pin    = new createjs.Bitmap("./imgs/"+j_mapImgsData.PinImg_1); // フロア内k番目のピン
+          var f_pin    = new createjs.Bitmap("./imgs/"+j_mapImgsData.PinImg_1); // フロア内k番目のピン // *p
           f_pin.scaleX = gm_general.scaleX;
           f_pin.scaleY = gm_general.scaleY;
           f_pin.x      = j_mapImgsData.Campus.buildings[i].pins[j][k].x * gm_general.scaleX;
@@ -371,9 +371,9 @@ function init(event){
             // 上の階へbuttonの設置
             //8棟3階の処理　ここだけ3階への画像になる
             if(i== 3 && j == 0){
-              bf_toUpper[i][j] = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.goUpperFloorImg_8);
+              bf_toUpper[i][j] = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.goUpperFloorImg_8); // *p
             }else{
-              bf_toUpper[i][j] = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.goUpperFloorImg);
+              bf_toUpper[i][j] = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.goUpperFloorImg); // *p
             }
             bf_toUpper[i][j].scaleX = gm_general.scaleX;
             bf_toUpper[i][j].scaleY = gm_general.scaleY;
@@ -396,10 +396,10 @@ function init(event){
             // 下の階へbuttonの設置
             if(i== 3 && j == 1){
               //8棟3階の処理　ここだけ1階への画像になる
-              bf_toLower[i][j] = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.goLowerFloorImg_8);
+              bf_toLower[i][j] = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.goLowerFloorImg_8); // *p
             }else{
               // それ以外の普通の棟
-              bf_toLower[i][j] = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.goLowerFloorImg);
+              bf_toLower[i][j] = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.goLowerFloorImg); // *p
             }
             bf_toLower[i][j].scaleX = gm_general.scaleX;
             bf_toLower[i][j].scaleY = gm_general.scaleY;
@@ -411,7 +411,7 @@ function init(event){
         }
         if(f_goULcheck == 0)bf_toLower[i][j] = -1; // 下の階へがない場合-1を格納
         // ---- 4.2.9 「構内TOPへ」画像の設置 -----------------------------------------------------
-        var f_toCampusTop = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.goTopArrow);
+        var f_toCampusTop = new createjs.Bitmap("./imgs/" + j_mapImgsData.Campus.goTopArrow); // *p
         f_toCampusTop.scaleX = gm_general.scaleX;
         f_toCampusTop.scaleY = gm_general.scaleY;
         f_toCampusTop.x      = j_mapImgsData.Campus.buildings[i].goTop[j].x * gm_general.scaleX;
