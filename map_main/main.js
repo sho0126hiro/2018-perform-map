@@ -681,7 +681,7 @@ function init(event){
     function DisplayPins(event){
       //var i = event.target.eventParam;
       var TimeLine = new createjs.Timeline();
-      var changetime = 500;
+      var changetime = 400;
       console.log("hyouzisuruyo");
       for(var i=0;i<a_pinContainers.length;i++){
         for(var j=0;j<a_pinContainers[i].children.length/2;j++){
@@ -725,7 +725,7 @@ function init(event){
     function HidePins(event){
       //var i = event.target.eventParam;
       var TimeLine = new createjs.Timeline();
-      var changetime = 500;
+      var changetime = 400;
       for(var i=0;i<a_pinContainers.length;i++){
         for(var j=0;j<a_pinContainers[i].children.length/2;j++){
           TimeLine.addTween(
